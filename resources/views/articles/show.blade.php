@@ -1,25 +1,51 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-4xl mx-auto px-4 py-8">
+<div class="max-w-[1200px] mx-auto px-4 py-8">
     <!-- Article Header -->
-    <div class="mb-8">
-        <h1 class="text-4xl font-bold mb-4">{{ $article->title }}</h1>
-        <div class="flex items-center text-gray-600 text-sm mb-6">
-            <div class="flex items-center">
-                <i class="fas fa-user mr-2"></i>
-                <span>{{ $article->user->name }}</span>
+    <h1 class="text-4xl font-bold font-serif mb-4 leading-tight">{{ $article->title }}</h1>
+    
+    <!-- Article Description -->
+    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+        {{ $article->description }}
+    </p>
+
+    <!-- Author Info & Article Meta -->
+    <div class="flex items-center gap-4 mb-8">
+        <div class="flex items-center gap-3">
+            <img src="https://ui-avatars.com/api/?name={{ urlencode($article->user->username) }}" 
+                 alt="{{ $article->user->username }}" 
+                 class="w-12 h-12 rounded-full">
+            <div>
+                <div class="flex items-center gap-2">
+                    <a href="#" class="font-medium hover:text-gray-600">{{ $article->user->username }}</a>
+                    @if($article->user->role === 'verified')
+                        <span class="text-blue-600">
+                            <i class="fas fa-check-circle"></i>
+                        </span>
+                    @endif
+                    <button class="text-green-600 hover:text-green-700 px-3 py-1 rounded-full border border-green-600 text-sm">
+                        Follow
+                    </button>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                    <span>{{ $article->read_time ?? '5' }} min read</span>
+                    <span>·</span>
+                    <span>{{ $article->created_at->format('M d, Y') }}</span>
+                </div>
             </div>
-            <div class="mx-4">•</div>
-            <div class="flex items-center">
-                <i class="fas fa-calendar mr-2"></i>
-                <span>{{ $article->created_at->format('M d, Y') }}</span>
-            </div>
-            <div class="mx-4">•</div>
-            <div class="flex items-center">
-                <i class="fas fa-eye mr-2"></i>
-                <span>{{ number_format($article->views) }} views</span>
-            </div>
+        </div>
+    </div>
+
+    <!-- Article Stats -->
+    <div class="flex items-center gap-6 border-b border-gray-200 pb-8 mb-8 text-sm text-gray-500">
+        <div class="flex items-center gap-2">
+            <i class="far fa-eye"></i>
+            <span>{{ number_format($article->views) }} views</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <i class="far fa-comment"></i>
+            <span>{{ $article->comments->count() }} comments</span>
         </div>
     </div>
 
@@ -28,40 +54,192 @@
         {!! $article->content !!}
     </div>
 
+    <!-- Article Stats Bottom -->
+    <div class="flex items-center gap-6 py-4 border-t border-gray-200 text-gray-500">
+        <div class="flex items-center gap-2">
+            <i class="far fa-eye"></i>
+            <span>{{ number_format($article->views) }}</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <i class="far fa-comment"></i>
+            <span>{{ $article->comments->count() }}</span>
+        </div>
+    </div>
+
     <!-- Comments Section -->
-    <div class="mt-8 space-y-8">
-        <h3 class="text-2xl font-bold flex items-center gap-2">
-            <i class="far fa-comments"></i>
-            Comments ({{ $article->comments->count() }})
-        </h3>
+    <div class="mt-12">
+        <h2 class="text-xl font-bold mb-8">Responses ({{ $article->comments->count() }})</h2>
 
         <!-- Comment Form -->
         @auth
-        <form action="{{ route('comments.store', $article) }}" method="POST" class="space-y-4">
-            @csrf
-            <textarea name="content" 
-                      rows="3"
-                      class="w-full rounded-lg border-gray-300 focus:border-gray-400 focus:ring focus:ring-gray-200"
-                      placeholder="Write a comment..."
-                      required></textarea>
-            @error('content')
-                <p class="text-red-500 text-sm">{{ $message }}</p>
-            @enderror
-            <button type="submit" 
-                    class="bg-black text-white px-6 py-2 rounded-full text-sm hover:bg-gray-800 transition-colors">
-                Post Comment
-            </button>
-        </form>
+            <div class="mb-8">
+                <div class="flex items-center gap-2 mb-2">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}" 
+                         alt="{{ auth()->user()->name }}" 
+                         class="w-8 h-8 rounded-full">
+                    <span class="font-medium">{{ auth()->user()->name }}</span>
+                    @if(auth()->user()->role === 'verified')
+                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <i class="fas fa-check-circle text-xs"></i>
+                            Verified
+                        </span>
+                    @endif
+                </div>
+                <div class="pl-10">
+                    <form action="{{ route('comments.store', $article) }}" method="POST">
+                        @csrf
+                        <textarea name="content" 
+                                  class="w-full p-3 bg-gray-50 rounded-lg border-0 focus:ring-0 text-sm"
+                                  rows="3"
+                                  placeholder="What are your thoughts?"
+                                  required></textarea>
+                        <div class="flex justify-end mt-2">
+                            <button type="submit" 
+                                    class="bg-green-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-green-700">
+                                Respond
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         @else
-        <div class="bg-gray-50 p-4 rounded-lg text-center">
-            <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Sign in</a> to join the discussion.
-        </div>
+            <div class="bg-gray-50 rounded-lg p-4 text-center mb-8">
+                <a href="{{ route('login') }}" class="text-green-600 hover:underline">Sign in</a> to leave a response.
+            </div>
         @endauth
 
         <!-- Comments List -->
         <div class="space-y-6">
             @foreach($article->comments()->whereNull('parent_id')->latest()->get() as $comment)
-                @include('articles.partials.comment', ['comment' => $comment])
+                <div class="flex gap-3" x-data="{ showReplyForm: false }">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode($comment->user->name) }}" 
+                         alt="{{ $comment->user->name }}" 
+                         class="w-8 h-8 rounded-full">
+                    <div class="flex-1">
+                        <!-- Comment Header -->
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-medium">{{ $comment->user->name }}</span>
+                            @if($comment->user->id === $article->user_id)
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <i class="fas fa-pen text-xs"></i>
+                                    Author
+                                </span>
+                            @endif
+                            @if($comment->user->role === 'verified')
+                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <i class="fas fa-check-circle text-xs"></i>
+                                    Verified
+                                </span>
+                            @endif
+                            <span class="text-gray-500 text-sm">{{ $comment->created_at->diffForHumans() }}</span>
+                        </div>
+
+                        <!-- Comment Content -->
+                        <div class="text-gray-800 mb-2">{{ $comment->content }}</div>
+
+                        <!-- Comment Actions -->
+                        <div class="flex items-center gap-4 text-sm text-gray-500">
+                            <button @click="showReplyForm = !showReplyForm" class="hover:text-gray-700">
+                                Reply
+                            </button>
+                            @can('delete', $comment)
+                                <form action="{{ route('comments.destroy', $comment) }}" 
+                                      method="POST" 
+                                      class="inline"
+                                      onsubmit="return confirm('Delete this comment?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="hover:text-red-500">
+                                        Delete
+                                    </button>
+                                </form>
+                            @endcan
+                        </div>
+
+                        <!-- Reply Form -->
+                        @auth
+                            <div x-show="showReplyForm" x-cloak class="mt-4">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}" 
+                                         alt="{{ auth()->user()->name }}" 
+                                         class="w-8 h-8 rounded-full">
+                                    <span class="font-medium">{{ auth()->user()->name }}</span>
+                                    @if(auth()->user()->role === 'verified')
+                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                            <i class="fas fa-check-circle text-xs"></i>
+                                            Verified
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="pl-10">
+                                    <form action="{{ route('comments.store', $article) }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                        <textarea name="content" 
+                                                  class="w-full p-3 bg-gray-50 rounded-lg border-0 focus:ring-0 text-sm"
+                                                  rows="3"
+                                                  placeholder="What are your thoughts?"
+                                                  required></textarea>
+                                        <div class="flex justify-end gap-2 mt-2">
+                                            <button type="button" 
+                                                    @click="showReplyForm = false"
+                                                    class="text-gray-500 hover:text-gray-700 text-sm">
+                                                Cancel
+                                            </button>
+                                            <button type="submit" 
+                                                    class="bg-green-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-green-700">
+                                                Respond
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        @endauth
+
+                        <!-- Nested Replies -->
+                        @if($comment->replies->count() > 0)
+                            <div class="mt-4 space-y-4">
+                                @foreach($comment->replies as $reply)
+                                    <div class="flex gap-3 pl-8">
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($reply->user->name) }}" 
+                                             alt="{{ $reply->user->name }}" 
+                                             class="w-8 h-8 rounded-full">
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="font-medium">{{ $reply->user->name }}</span>
+                                                @if($reply->user->id === $article->user_id)
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                        <i class="fas fa-pen text-xs"></i>
+                                                        Author
+                                                    </span>
+                                                @endif
+                                                @if($reply->user->role === 'verified')
+                                                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                        <i class="fas fa-check-circle text-xs"></i>
+                                                        Verified
+                                                    </span>
+                                                @endif
+                                                <span class="text-gray-500 text-sm">{{ $reply->created_at->diffForHumans() }}</span>
+                                            </div>
+                                            <div class="text-gray-800 mb-2">{{ $reply->content }}</div>
+                                            @can('delete', $reply)
+                                                <form action="{{ route('comments.destroy', $reply) }}" 
+                                                      method="POST" 
+                                                      class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-sm text-gray-500 hover:text-red-500">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            @endcan
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
             @endforeach
         </div>
     </div>

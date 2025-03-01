@@ -21,7 +21,7 @@
         <?php echo $__env->yieldPushContent('styles'); ?>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-[#f8f6f2]">
+        <div class="min-h-screen bg-[#f8f6f2] flex flex-col">
             <div class="bg-white">
                 <?php echo $__env->make('layouts.navigation', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
             </div>
@@ -37,9 +37,12 @@
             <?php endif; ?>
 
             <!-- Page Content -->
-            <main>
+            <main class="flex-grow">
                 <?php echo $__env->yieldContent('content'); ?>
             </main>
+
+            <!-- Footer -->
+            <?php echo $__env->make('layouts.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
         </div>
     </body>
 </html>

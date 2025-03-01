@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title>Medium Clone</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    @vite('resources/css/app.css')
+    <?php echo app('Illuminate\Foundation\Vite')('resources/css/app.css'); ?>
     <style>
         .modal {
             display: none;
@@ -62,7 +62,7 @@
 </head>
 <body class="bg-[#f8f6f2] text-black font-['Georgia'] flex flex-col min-h-screen">
     <div class="bg-white w-full">
-        @include('layouts.navigation')
+        <?php echo $__env->make('layouts.navigation', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     </div>
     
     <main class="flex justify-center items-center flex-col flex-grow px-4 py-20">
@@ -76,7 +76,7 @@
         </section>
     </main>
 
-    @include('layouts.footer')
+    <?php echo $__env->make('layouts.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
     <!-- Sign Up Modal -->
     <div class="modal" id="signUpModal">
@@ -205,3 +205,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\project-rasya\blogging\resources\views/welcome.blade.php ENDPATH**/ ?>

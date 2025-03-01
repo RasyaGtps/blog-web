@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard - ByRead</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    @vite('resources/css/app.css')
+    <?php echo app('Illuminate\Foundation\Vite')('resources/css/app.css'); ?>
 </head>
 <body class="bg-[#FDF6F0] flex flex-col min-h-screen">
     <!-- Navigation -->
     <div class="bg-white w-full border-b border-gray-200">
-        @include('layouts.navigation')
+        <?php echo $__env->make('layouts.navigation', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     </div>
 
     <div class="container max-w-[1200px] mx-auto px-4 py-8 flex-grow">
@@ -27,45 +27,46 @@
                                 </h1>
                                 <p class="text-gray-600 mt-1 flex items-center gap-2">
                                     <i class="fas fa-user"></i>
-                                    Welcome back, {{ auth()->user()->name }}!
+                                    Welcome back, <?php echo e(auth()->user()->name); ?>!
                                 </p>
                             </div>
-                            <a href="{{ route('articles.create') }}" 
+                            <a href="<?php echo e(route('articles.create')); ?>" 
                                class="bg-black text-white px-6 py-2.5 rounded-full text-sm hover:bg-[#242424] transition-colors flex items-center gap-2">
                                 <i class="fas fa-plus"></i>
                                 Create Article
                             </a>
                         </div>
 
-                        @if($articles->isEmpty())
+                        <?php if($articles->isEmpty()): ?>
                             <div class="text-center py-12 bg-white rounded-lg shadow-sm">
                                 <i class="fas fa-pen-fancy text-4xl text-gray-400 mb-4"></i>
                                 <p class="text-gray-600 mb-4">You haven't written any articles yet.</p>
                                 <p class="text-sm text-gray-500">Share your thoughts with the world!</p>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="space-y-4">
-                                @foreach($articles as $article)
+                                <?php $__currentLoopData = $articles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $article): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="bg-white rounded-lg shadow-sm p-6">
                                         <div class="flex justify-between items-start">
                                             <h2 class="text-xl font-bold mb-2">
-                                                <a href="{{ route('articles.show', $article) }}" 
+                                                <a href="<?php echo e(route('articles.show', $article)); ?>" 
                                                    class="text-black hover:text-gray-700">
-                                                    {{ $article->title }}
+                                                    <?php echo e($article->title); ?>
+
                                                 </a>
                                             </h2>
                                             <div class="flex gap-3">
-                                                <a href="{{ route('articles.edit', $article) }}" 
+                                                <a href="<?php echo e(route('articles.edit', $article)); ?>" 
                                                    class="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors">
                                                     <i class="fas fa-edit"></i>
                                                     <span>Edit</span>
                                                 </a>
-                                                <form action="{{ route('articles.destroy', $article) }}" 
+                                                <form action="<?php echo e(route('articles.destroy', $article)); ?>" 
                                                       method="POST" 
                                                       onsubmit="return confirm('Are you sure you want to delete this article?');"
                                                       class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
+                                                    <?php echo csrf_field(); ?>
+                                                    <?php echo method_field('DELETE'); ?>
                                                     <button type="submit" 
                                                             class="flex items-center gap-1 text-sm text-gray-600 hover:text-red-600 transition-colors">
                                                         <i class="fas fa-trash-alt"></i>
@@ -75,48 +76,53 @@
                                             </div>
                                         </div>
                                         <p class="text-gray-600 mb-4">
-                                            {{ Str::limit($article->content, 200) }}
+                                            <?php echo e(Str::limit($article->content, 200)); ?>
+
                                         </p>
                                         <div class="flex items-center text-sm text-gray-500 gap-4">
                                             <span class="flex items-center gap-1">
                                                 <i class="far fa-calendar-alt"></i>
-                                                {{ $article->created_at->format('d M Y') }}
+                                                <?php echo e($article->created_at->format('d M Y')); ?>
+
                                             </span>
                                             <span class="flex items-center gap-1">
                                                 <i class="far fa-eye"></i>
-                                                {{ $article->views }} views
+                                                <?php echo e($article->views); ?> views
                                             </span>
                                             <span class="flex items-center gap-1">
                                                 <i class="far fa-comment"></i>
-                                                {{ $article->comments->count() }} comments
+                                                <?php echo e($article->comments->count()); ?> comments
                                             </span>
                                         </div>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
 
-                            @if($articles->hasPages())
+                            <?php if($articles->hasPages()): ?>
                                 <div class="mt-6">
-                                    {{ $articles->links() }}
+                                    <?php echo e($articles->links()); ?>
+
                                 </div>
-                            @endif
-                        @endif
+                            <?php endif; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    @include('layouts.footer')
+    <?php echo $__env->make('layouts.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
-    @if(session('success'))
+    <?php if(session('success')): ?>
         <div class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2" 
              x-data="{ show: true }"
              x-show="show"
              x-init="setTimeout(() => show = false, 3000)">
             <i class="fas fa-check-circle"></i>
-            {{ session('success') }}
+            <?php echo e(session('success')); ?>
+
         </div>
-    @endif
+    <?php endif; ?>
 </body>
 </html>
+<?php /**PATH C:\project-rasya\blogging\resources\views/dashboard.blade.php ENDPATH**/ ?>

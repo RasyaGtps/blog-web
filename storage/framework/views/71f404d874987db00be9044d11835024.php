@@ -1,12 +1,10 @@
-@extends('layouts.app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container max-w-[800px] mx-auto px-4 py-8">
     <div class="bg-white rounded-lg p-6 shadow-sm">
         <h1 class="text-2xl font-bold mb-6">Write a Story</h1>
 
-        <form action="{{ route('articles.store') }}" method="POST" class="space-y-6">
-            @csrf
+        <form action="<?php echo e(route('articles.store')); ?>" method="POST" class="space-y-6">
+            <?php echo csrf_field(); ?>
 
             <!-- Title -->
             <div class="mb-6">
@@ -16,11 +14,18 @@
                        id="title"
                        class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-gray-400"
                        placeholder="Title"
-                       value="{{ old('title') }}"
+                       value="<?php echo e(old('title')); ?>"
                        required>
-                @error('title')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
+                <?php $__errorArgs = ['title'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             <!-- Description -->
@@ -31,11 +36,18 @@
                           rows="3"
                           class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-gray-400"
                           placeholder="Write a short description of your story..."
-                          required>{{ old('description') }}</textarea>
+                          required><?php echo e(old('description')); ?></textarea>
                 <p class="text-sm text-gray-500 mt-1">A brief summary that will appear under your story title</p>
-                @error('description')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
+                <?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             <!-- Tags -->
@@ -56,20 +68,27 @@
                                     placeholderValue: 'Select up to 5 tags'
                                 })
                             }">
-                        @foreach($tags as $tag)
-                            <option value="{{ $tag->id }}">{{ $tag->name }}</option>
-                        @endforeach
+                        <?php $__currentLoopData = $tags; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tag): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($tag->id); ?>"><?php echo e($tag->name); ?></option>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
                 <p class="text-sm text-gray-500 mt-1">Choose up to 5 tags that best describe your story</p>
-                @error('tags')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
+                <?php $__errorArgs = ['tags'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             <!-- Article Type (for verified users only) -->
-            @if(auth()->user()->role === 'verified')
-                <div class="mb-6" x-data="{ type: '{{ old('type', 'free') }}' }">
+            <?php if(auth()->user()->role === 'verified'): ?>
+                <div class="mb-6" x-data="{ type: '<?php echo e(old('type', 'free')); ?>' }">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Article Type</label>
                     <div class="flex gap-4">
                         <!-- Free Option -->
@@ -112,11 +131,18 @@
                             </div>
                         </label>
                     </div>
-                    @error('type')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <!-- Content -->
             <div class="mb-6">
@@ -126,15 +152,22 @@
                           rows="12"
                           class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:border-gray-400 resize-none"
                           placeholder="Tell your story..."
-                          required>{{ old('content') }}</textarea>
-                @error('content')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                @enderror
+                          required><?php echo e(old('content')); ?></textarea>
+                <?php $__errorArgs = ['content'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                    <p class="text-red-500 text-sm mt-1"><?php echo e($message); ?></p>
+                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             <!-- Actions -->
             <div class="flex justify-between pt-6 border-t">
-                <a href="{{ route('dashboard') }}" 
+                <a href="<?php echo e(route('dashboard')); ?>" 
                    class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-full text-sm hover:bg-gray-200 transition-colors">
                     Cancel
                 </a>
@@ -147,11 +180,11 @@
     </div>
 </div>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>
@@ -173,5 +206,6 @@
         }
     };
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\project-rasya\blogging\resources\views/articles/create.blade.php ENDPATH**/ ?>

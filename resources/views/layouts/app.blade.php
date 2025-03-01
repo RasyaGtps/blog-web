@@ -21,7 +21,7 @@
         @stack('styles')
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-[#f8f6f2]">
+        <div class="min-h-screen bg-[#f8f6f2] flex flex-col">
             <div class="bg-white">
                 @include('layouts.navigation')
             </div>
@@ -36,9 +36,12 @@
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="flex-grow">
                 @yield('content')
             </main>
+
+            <!-- Footer -->
+            @include('layouts.footer')
         </div>
     </body>
 </html>

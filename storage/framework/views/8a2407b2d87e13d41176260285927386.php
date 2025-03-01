@@ -7,6 +7,12 @@
             <div class="flex items-center">
                 <i class="fas fa-user mr-2"></i>
                 <span><?php echo e($article->user->name); ?></span>
+                <?php if($article->user->role === 'verified'): ?>
+                    <span class="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <i class="fas fa-check-circle"></i>
+                        Verified
+                    </span>
+                <?php endif; ?>
             </div>
             <div class="mx-4">•</div>
             <div class="flex items-center">

@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\StoryController;
+use App\Http\Controllers\MembershipController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -63,3 +64,5 @@ Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('art
 
 // Add this to your web routes
 Route::get('/stories', [StoryController::class, 'index'])->name('stories.index');
+
+Route::get('/membership', [MembershipController::class, 'index'])->name('membership.index');

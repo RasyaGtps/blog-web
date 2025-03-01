@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Str;
 
 class ArticleController extends Controller
 {
@@ -16,7 +18,8 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        return view('articles.create');
+        $tags = Tag::orderBy('name')->get();
+        return view('articles.create', compact('tags'));
     }
 
     /**
@@ -25,11 +28,24 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'content' => 'required',
+            'tags' => 'required|array|min:1|max:5',
+            'tags.*' => 'exists:tags,id',
+            'type' => auth()->user()->role === 'verified' ? 'required|in:free,premium' : 'sometimes'
         ]);
 
-        $article = $request->user()->articles()->create($validated);
+        $article = auth()->user()->articles()->create([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'content' => $validated['content'],
+            'type' => $validated['type'] ?? 'free'
+        ]);
+
+        if (isset($validated['tags'])) {
+            $article->tags()->attach($validated['tags']);
+        }
 
         return redirect()->route('articles.show', $article)
             ->with('success', 'Article published successfully!');
@@ -40,13 +56,17 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
-        // Increment view count atomically
-        DB::table('articles')
-            ->where('id', $article->id)
-            ->increment('views');
+        if (auth()->check()) {
+            $sessionKey = 'article_' . $article->id . '_last_view';
+            $lastView = session()->get($sessionKey);
+            $now = now();
 
-        // Get fresh article data with comments and users
-        $article->load(['comments.user', 'user']);
+            // Cek apakah sudah lebih dari 1 jam sejak view terakhir atau belum pernah dilihat
+            if (!$lastView || $now->diffInHours($lastView) >= 1) {
+                $article->increment('views');
+                session()->put($sessionKey, $now);
+            }
+        }
 
         return view('articles.show', compact('article'));
     }
@@ -57,7 +77,8 @@ class ArticleController extends Controller
     public function edit(Article $article)
     {
         $this->authorize('update', $article);
-        return view('articles.edit', compact('article'));
+        $tags = Tag::orderBy('name')->get();
+        return view('articles.edit', compact('article', 'tags'));
     }
 
     /**
@@ -68,11 +89,22 @@ class ArticleController extends Controller
         $this->authorize('update', $article);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'title' => 'required|max:255',
+            'description' => 'required',
+            'content' => 'required',
+            'tags' => 'required|array|min:1|max:5',
+            'tags.*' => 'exists:tags,id',
+            'type' => auth()->user()->role === 'verified' ? 'required|in:free,premium' : 'sometimes'
         ]);
 
-        $article->update($validated);
+        $article->update([
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'content' => $validated['content'],
+            'type' => $validated['type'] ?? 'free'
+        ]);
+
+        $article->tags()->sync($validated['tags'] ?? []);
 
         return redirect()->route('articles.show', $article)
             ->with('success', 'Article updated successfully!');

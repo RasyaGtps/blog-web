@@ -16,9 +16,11 @@ class Article extends Model
      */
     protected $fillable = [
         'title',
+        'description',
         'content',
         'views',
-        'user_id'
+        'user_id',
+        'type'
     ];
 
     /**
@@ -44,5 +46,22 @@ class Article extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Get the tags for the article.
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class)
+                    ->withTimestamps();
+    }
+
+    /**
+     * Check if article is premium
+     */
+    public function isPremium()
+    {
+        return $this->type === 'premium';
     }
 }

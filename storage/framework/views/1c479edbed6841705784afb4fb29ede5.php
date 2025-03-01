@@ -5,6 +5,18 @@
             <div class="flex items-center gap-2">
                 <i class="fas fa-user-circle text-gray-400"></i>
                 <span class="font-medium"><?php echo e($comment->user->name); ?></span>
+                <?php if($comment->user->id === $article->user_id): ?>
+                    <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <i class="fas fa-crown text-xs"></i>
+                        Author
+                    </span>
+                <?php endif; ?>
+                <?php if($comment->user->role === 'verified'): ?>
+                    <span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <i class="fas fa-check-circle text-xs"></i>
+                        Verified
+                    </span>
+                <?php endif; ?>
                 <span class="text-gray-500 text-sm">
                     <?php echo e($comment->created_at->diffForHumans()); ?>
 
