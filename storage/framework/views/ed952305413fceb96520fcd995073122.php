@@ -30,11 +30,18 @@
                                     Welcome back, <?php echo e(auth()->user()->name); ?>!
                                 </p>
                             </div>
-                            <a href="<?php echo e(route('articles.create')); ?>" 
-                               class="bg-black text-white px-6 py-2.5 rounded-full text-sm hover:bg-[#242424] transition-colors flex items-center gap-2">
-                                <i class="fas fa-plus"></i>
-                                Create Article
-                            </a>
+                            <div class="flex items-center gap-4">
+                                <a href="<?php echo e(route('profile')); ?>" 
+                                   class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-full text-sm hover:bg-gray-200 transition-colors flex items-center gap-2">
+                                    <i class="fas fa-cog"></i>
+                                    Settings
+                                </a>
+                                <a href="<?php echo e(route('articles.create')); ?>" 
+                                   class="bg-black text-white px-6 py-2.5 rounded-full text-sm hover:bg-[#242424] transition-colors flex items-center gap-2">
+                                    <i class="fas fa-plus"></i>
+                                    Create Article
+                                </a>
+                            </div>
                         </div>
 
                         <?php if($articles->isEmpty()): ?>

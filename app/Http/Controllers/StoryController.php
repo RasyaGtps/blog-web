@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class StoryController extends Controller
@@ -13,7 +14,12 @@ class StoryController extends Controller
             ->latest()
             ->paginate(12);
 
-        return view('stories.index', compact('articles'));
+        $tags = Tag::withCount('articles')
+            ->orderBy('articles_count', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('stories.index', compact('articles', 'tags'));
     }
 
     public function apiIndex()

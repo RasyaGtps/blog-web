@@ -18,11 +18,21 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('avatar')->nullable();
+            $table->text('bio')->nullable();
             $table->enum('role', ['user', 'admin', 'verified'])->default('user');
             $table->enum('membership', ['free', 'basic', 'premium'])->default('free');
             $table->timestamp('membership_expires_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
+        });
+
+        Schema::create('follows', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('follower_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('following_id')->constrained('users')->onDelete('cascade');
+            $table->timestamps();
+            $table->unique(['follower_id', 'following_id']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -46,6 +56,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('follows');
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');

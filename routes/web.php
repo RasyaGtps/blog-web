@@ -31,25 +31,34 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    // Profile Routes
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.updateAvatar');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // Following Routes
+    Route::post('/follow/{user}', [ProfileController::class, 'follow'])->name('user.follow');
+    Route::delete('/unfollow/{user}', [ProfileController::class, 'unfollow'])->name('user.unfollow');
+    Route::get('/users/{user}/followers', [ProfileController::class, 'followers'])->name('user.followers');
+    Route::get('/users/{user}/following', [ProfileController::class, 'following'])->name('user.following');
+
+    // Auth Routes
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
-    // Article routes
+    // Article Routes
     Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
     Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
     Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
-    // Comment routes
+    // Comment Routes
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
 });
 
-// Article routes that don't require authentication - put these last
+// Public Routes
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
 
 // Temporary route for development - REMOVE IN PRODUCTION

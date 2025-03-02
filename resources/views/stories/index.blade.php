@@ -142,15 +142,16 @@
                     <div class="bg-gray-50 rounded-lg p-6">
                         <h3 class="font-bold mb-4">Recommended topics</h3>
                         <div class="flex flex-wrap gap-2">
-                            <a href="#" class="bg-gray-200 px-4 py-2 rounded-full text-sm hover:bg-gray-300">
-                                Programming
-                            </a>
-                            <a href="#" class="bg-gray-200 px-4 py-2 rounded-full text-sm hover:bg-gray-300">
-                                Writing
-                            </a>
-                            <a href="#" class="bg-gray-200 px-4 py-2 rounded-full text-sm hover:bg-gray-300">
-                                Technology
-                            </a>
+                            @if(isset($tags) && $tags->count() > 0)
+                                @foreach($tags as $tag)
+                                    <a href="#" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-200 hover:bg-gray-300 transition-colors">
+                                        <span class="text-gray-600">#</span>
+                                        <span class="text-gray-800">{{ $tag->name }}</span>
+                                    </a>
+                                @endforeach
+                            @else
+                                <span class="text-gray-500 text-sm">No topics available</span>
+                            @endif
                         </div>
                     </div>
                 </div>

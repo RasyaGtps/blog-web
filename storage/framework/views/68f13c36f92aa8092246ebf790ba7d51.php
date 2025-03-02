@@ -148,15 +148,16 @@
                     <div class="bg-gray-50 rounded-lg p-6">
                         <h3 class="font-bold mb-4">Recommended topics</h3>
                         <div class="flex flex-wrap gap-2">
-                            <a href="#" class="bg-gray-200 px-4 py-2 rounded-full text-sm hover:bg-gray-300">
-                                Programming
-                            </a>
-                            <a href="#" class="bg-gray-200 px-4 py-2 rounded-full text-sm hover:bg-gray-300">
-                                Writing
-                            </a>
-                            <a href="#" class="bg-gray-200 px-4 py-2 rounded-full text-sm hover:bg-gray-300">
-                                Technology
-                            </a>
+                            <?php if(isset($tags) && $tags->count() > 0): ?>
+                                <?php $__currentLoopData = $tags; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tag): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <a href="#" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-200 hover:bg-gray-300 transition-colors">
+                                        <span class="text-gray-600">#</span>
+                                        <span class="text-gray-800"><?php echo e($tag->name); ?></span>
+                                    </a>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php else: ?>
+                                <span class="text-gray-500 text-sm">No topics available</span>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

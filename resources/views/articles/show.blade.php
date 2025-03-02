@@ -6,10 +6,9 @@
     <h1 class="text-4xl font-bold font-serif mb-4 leading-tight">{{ $article->title }}</h1>
     
     <!-- Article Description -->
-    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+    <p class="text-xl text-gray-600 mb-4 leading-relaxed">
         {{ $article->description }}
     </p>
-
     <!-- Author Info & Article Meta -->
     <div class="flex items-center gap-4 mb-8">
         <div class="flex items-center gap-3">
@@ -50,9 +49,21 @@
     </div>
 
     <!-- Article Content -->
-    <div class="prose max-w-none mb-12">
+    <div class="prose max-w-none mb-8">
         {!! $article->content !!}
     </div>
+
+    <!-- Tags Below -->
+    @if($article->tags->count() > 0)
+        <div class="flex flex-wrap gap-2 py-6 border-t border-gray-200">
+            @foreach($article->tags as $tag)
+                <a href="#" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-200 hover:bg-gray-300 transition-colors">
+                    <span class="text-gray-600">#</span>
+                    <span class="text-gray-800">{{ $tag->name }}</span>
+                </a>
+            @endforeach
+        </div>
+    @endif
 
     <!-- Article Stats Bottom -->
     <div class="flex items-center gap-6 py-4 border-t border-gray-200 text-gray-500">
@@ -89,8 +100,8 @@
                     <form action="{{ route('comments.store', $article) }}" method="POST">
                         @csrf
                         <textarea name="content" 
-                                  class="w-full p-3 bg-gray-50 rounded-lg border-0 focus:ring-0 text-sm"
-                                  rows="3"
+                                  class="w-full p-3 bg-gray-200 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
+                                  rows="1"
                                   placeholder="What are your thoughts?"
                                   required></textarea>
                         <div class="flex justify-end mt-2">
@@ -176,8 +187,8 @@
                                         @csrf
                                         <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                                         <textarea name="content" 
-                                                  class="w-full p-3 bg-gray-50 rounded-lg border-0 focus:ring-0 text-sm"
-                                                  rows="3"
+                                                  class="w-full p-3 bg-gray-200 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
+                                                  rows="1"
                                                   placeholder="What are your thoughts?"
                                                   required></textarea>
                                         <div class="flex justify-end gap-2 mt-2">
