@@ -19,7 +19,12 @@ class StoryController extends Controller
             ->limit(10)
             ->get();
 
-        return view('stories.index', compact('articles', 'tags'));
+        $randomArticles = Article::with('user')
+            ->inRandomOrder()
+            ->limit(3)
+            ->get();
+
+        return view('stories.index', compact('articles', 'tags', 'randomArticles'));
     }
 
     public function apiIndex()

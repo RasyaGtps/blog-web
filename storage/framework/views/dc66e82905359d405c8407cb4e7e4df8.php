@@ -4,7 +4,7 @@
     <h1 class="text-4xl font-bold font-serif mb-4 leading-tight"><?php echo e($article->title); ?></h1>
     
     <!-- Article Description -->
-    <p class="text-xl text-gray-600 mb-4 leading-relaxed">
+    <p class="text-xl text-gray-600 mb-4 leading-relaxed text-justify">
         <?php echo e($article->description); ?>
 
     </p>
@@ -75,8 +75,13 @@
 
     <!-- Article Content -->
     <div class="prose max-w-none mb-8">
-        <?php echo $article->content; ?>
-
+        <div class="max-w-[1200px] text-lg">
+            <?php $__currentLoopData = preg_split('/\n\s*\n/', $article->content); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $paragraph): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if(trim($paragraph)): ?>
+                    <p class="mb-6 text-justify"><?php echo e($paragraph); ?></p>
+                <?php endif; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
     </div>
 
     <!-- Tags Below -->

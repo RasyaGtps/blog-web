@@ -85,17 +85,23 @@
     <div class="space-y-6">
         <h2 class="text-2xl font-bold">Articles</h2>
         <?php if($articles->count() > 0): ?>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="flex flex-wrap gap-6">
                 <?php $__currentLoopData = $articles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $article): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="bg-white rounded-lg shadow overflow-hidden">
-                        <a href="<?php echo e(route('articles.show', $article)); ?>" class="block">
+                    <div class="bg-white rounded-lg shadow overflow-hidden w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                        <a href="<?php echo e(route('articles.show', $article)); ?>" class="block h-full">
                             <?php if($article->cover_image): ?>
-                                <img src="<?php echo e($article->cover_image); ?>" alt="<?php echo e($article->title); ?>" class="w-full h-48 object-cover">
+                                <div class="aspect-w-16 aspect-h-9">
+                                    <img src="<?php echo e($article->cover_image); ?>" 
+                                         alt="<?php echo e($article->title); ?>" 
+                                         class="w-full object-cover">
+                                </div>
                             <?php endif; ?>
-                            <div class="p-4">
-                                <h3 class="font-bold text-lg mb-2"><?php echo e($article->title); ?></h3>
-                                <p class="text-gray-600 text-sm mb-4"><?php echo e(Str::limit($article->description, 100)); ?></p>
-                                <div class="flex items-center justify-between text-sm text-gray-500">
+                            <div class="p-4 flex flex-col h-full">
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-lg mb-2 truncate"><?php echo e($article->title); ?></h3>
+                                    <p class="text-gray-600 text-sm line-clamp-2"><?php echo e($article->description); ?></p>
+                                </div>
+                                <div class="flex items-center justify-between text-sm text-gray-500 mt-4">
                                     <span><?php echo e($article->created_at->format('M d, Y')); ?></span>
                                     <span><?php echo e($article->read_time ?? '5'); ?> min read</span>
                                 </div>

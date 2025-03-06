@@ -104,9 +104,11 @@ class ArticleController extends Controller
             'type' => $validated['type'] ?? 'free'
         ]);
 
-        $article->tags()->sync($validated['tags'] ?? []);
+        if (isset($validated['tags'])) {
+            $article->tags()->sync($validated['tags']);
+        }
 
-        return redirect()->route('articles.show', $article)
+        return redirect()->route('dashboard')
             ->with('success', 'Article updated successfully!');
     }
 

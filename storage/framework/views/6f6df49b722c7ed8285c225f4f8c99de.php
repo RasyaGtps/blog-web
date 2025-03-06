@@ -152,8 +152,7 @@
                             </a>
                             <form action="<?php echo e(route('admin.articles.destroy', $article)); ?>" 
                                   method="POST" 
-                                  class="inline-block"
-                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus artikel ini?');">
+                                  class="inline-block">
                                 <?php echo csrf_field(); ?>
                                 <?php echo method_field('DELETE'); ?>
                                 <button type="submit" 

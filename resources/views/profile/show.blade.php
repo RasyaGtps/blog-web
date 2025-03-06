@@ -84,17 +84,23 @@
     <div class="space-y-6">
         <h2 class="text-2xl font-bold">Articles</h2>
         @if($articles->count() > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="flex flex-wrap gap-6">
                 @foreach($articles as $article)
-                    <div class="bg-white rounded-lg shadow overflow-hidden">
-                        <a href="{{ route('articles.show', $article) }}" class="block">
+                    <div class="bg-white rounded-lg shadow overflow-hidden w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                        <a href="{{ route('articles.show', $article) }}" class="block h-full">
                             @if($article->cover_image)
-                                <img src="{{ $article->cover_image }}" alt="{{ $article->title }}" class="w-full h-48 object-cover">
+                                <div class="aspect-w-16 aspect-h-9">
+                                    <img src="{{ $article->cover_image }}" 
+                                         alt="{{ $article->title }}" 
+                                         class="w-full object-cover">
+                                </div>
                             @endif
-                            <div class="p-4">
-                                <h3 class="font-bold text-lg mb-2">{{ $article->title }}</h3>
-                                <p class="text-gray-600 text-sm mb-4">{{ Str::limit($article->description, 100) }}</p>
-                                <div class="flex items-center justify-between text-sm text-gray-500">
+                            <div class="p-4 flex flex-col h-full">
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-lg mb-2 truncate">{{ $article->title }}</h3>
+                                    <p class="text-gray-600 text-sm whitespace-pre-line">{{ $article->description }}</p>
+                                </div>
+                                <div class="flex items-center justify-between text-sm text-gray-500 mt-4">
                                     <span>{{ $article->created_at->format('M d, Y') }}</span>
                                     <span>{{ $article->read_time ?? '5' }} min read</span>
                                 </div>

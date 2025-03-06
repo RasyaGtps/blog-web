@@ -1,4 +1,4 @@
-# ByRead - Blog Web Platform 🚀
+# ByRead - Platform Blogging Modern 🚀
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
@@ -11,19 +11,35 @@
 
 ## 🌟 Tentang ByRead
 
-ByRead adalah platform blogging modern yang dibangun dengan Laravel dan Tailwind CSS. Platform ini menyediakan pengalaman menulis dan membaca blog yang elegan dengan fitur-fitur canggih.
+ByRead adalah platform blogging modern yang memungkinkan penulis berbagi ide dan pengetahuan mereka dalam format yang elegan. Dibangun dengan Laravel dan Tailwind CSS, platform ini menawarkan pengalaman menulis dan membaca yang optimal dengan berbagai fitur canggih.
 
 ### ✨ Fitur Utama
 
-- 📝 Editor artikel yang kaya fitur
-- 👤 Manajemen profil pengguna
-- 🖼️ Upload dan manajemen gambar
-- 💬 Sistem komentar
-- 👥 Fitur follow/following
-- 🔍 Pencarian artikel
-- 📱 Responsive design
+- 📝 Sistem Artikel
+  - Editor teks yang mudah digunakan
+  - Dukungan untuk artikel premium dan gratis
+  - Sistem tag untuk kategorisasi
+  - Statistik pembaca dan engagement
 
-## 🚀 Cara Menggunakan
+- 👤 Manajemen Pengguna
+  - Sistem verifikasi penulis
+  - Profil yang dapat disesuaikan
+  - Avatar dan bio pengguna
+  - Statistik artikel dan followers
+
+- 🤝 Interaksi Sosial
+  - Sistem follow/following
+  - Komentar dan balasan
+  - Notifikasi real-time
+  - Berbagi artikel
+
+- 💎 Fitur Premium
+  - Paket keanggotaan (Basic/Premium)
+  - Konten eksklusif
+  - Badge khusus untuk penulis terverifikasi
+  - Statistik detail
+
+## 🚀 Memulai
 
 ### Persyaratan Sistem
 
@@ -41,103 +57,93 @@ git clone https://github.com/RasyaGtps/blog-web.git
 cd blog-web
 ```
 
-2. Install dependensi PHP
+2. Install dependensi
 ```bash
 composer install
-```
-
-3. Install dependensi JavaScript
-```bash
 npm install
 ```
 
-4. Salin file environment
+3. Konfigurasi environment
 ```bash
 cp .env.example .env
-```
-
-5. Generate key aplikasi
-```bash
 php artisan key:generate
 ```
 
-6. Konfigurasi database di file .env
+4. Setup database di .env
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=blog_web
+DB_DATABASE=byread
 DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-7. Jalankan migrasi database
+5. Migrasi dan seeding
 ```bash
-php artisan migrate
-```
-
-8. Buat symbolic link untuk storage
-```bash
+php artisan migrate --seed
 php artisan storage:link
 ```
 
-9. Compile assets
+6. Compile assets dan jalankan server
 ```bash
 npm run dev
-```
-
-10. Jalankan server
-```bash
 php artisan serve
 ```
 
-### 📝 Penggunaan
+## 📱 Fitur Detail
 
-1. Registrasi akun baru atau login
-2. Lengkapi profil dan upload avatar
-3. Mulai menulis artikel
-4. Jelajahi artikel dari penulis lain
-5. Berikan komentar dan follow penulis favorit
+### Sistem Artikel
+- Dukungan markdown
+- Upload gambar cover
+- Estimasi waktu baca
+- Sistem draft & publikasi
+- Tag dan kategori
+- Statistik view & engagement
 
-## 🎨 Fitur Detail
+### Manajemen Pengguna
+- Sistem role (admin/verified/user)
+- Profil kustom dengan avatar
+- Dashboard statistik
+- Manajemen artikel
+- Pengaturan notifikasi
 
-### Manajemen Profil
-- Upload avatar
-- Edit informasi profil
-- Lihat statistik artikel
-- Kelola following/followers
-
-### Artikel
-- Editor WYSIWYG
-- Upload gambar dalam artikel
-- Draft dan publikasi
-- Kategori dan tag
-- Like dan bookmark
+### Membership
+- Paket Basic & Premium
+- Pembayaran terintegrasi
+- Konten eksklusif
+- Badge khusus
+- Statistik detail
 
 ### Interaksi
-- Sistem komentar
-- Follow penulis
+- Komentar & balasan
+- Follow/Unfollow
+- Notifikasi real-time
 - Share artikel
-- Notifikasi
+- Like & bookmark
 
-## 🛠️ Teknologi yang Digunakan
+## 🛠️ Tech Stack
 
-- [Laravel](https://laravel.com) - Backend Framework
-- [Tailwind CSS](https://tailwindcss.com) - Styling
-- [Alpine.js](https://alpinejs.dev) - JavaScript Framework
-- [MySQL](https://www.mysql.com) - Database
-- [Vite](https://vitejs.dev) - Build Tool
-
-## 📚 Dokumentasi API
-
-Dokumentasi API lengkap dapat ditemukan di `/docs/api` setelah menjalankan:
-```bash
-php artisan l5-swagger:generate
-```
+- **Backend**: Laravel 10
+- **Frontend**: 
+  - Tailwind CSS
+  - Alpine.js
+  - Blade Templates
+- **Database**: MySQL
+- **Tools**: 
+  - Vite
+  - Laravel Mix
+  - Composer
+  - NPM
 
 ## 🤝 Kontribusi
 
-Kontribusi selalu diterima! Silakan buat pull request atau laporkan issue.
+Kontribusi selalu diterima! Silakan:
+1. Fork repositori
+2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
 
 ## 📜 Lisensi
 

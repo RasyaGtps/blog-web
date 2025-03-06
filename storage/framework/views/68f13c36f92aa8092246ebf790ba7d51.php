@@ -108,10 +108,10 @@
                             </p>
                             <div class="flex items-center gap-4 text-sm">
                                 <span class="bg-gray-100 px-3 py-1 rounded-full text-gray-600">
-                                    <?php echo e($article->category ?? 'Umum'); ?>
+                                    <?php echo e($article->category ?? 'General'); ?>
 
                                 </span>
-                                <span class="text-gray-500"><?php echo e($article->read_time ?? '5'); ?> menit baca</span>
+                                <span class="text-gray-500"><?php echo e($article->read_time ?? '5'); ?> min read</span>
                                 <span class="flex items-center gap-1 text-gray-500">
                                     <i class="far fa-eye"></i>
                                     <?php echo e($article->views); ?>
@@ -151,19 +151,34 @@
             <div class="hidden md:block col-span-4">
                 <div class="sticky top-4">
                     <div class="bg-[#FDF6F0] rounded-lg p-6 mb-6">
-                        <h3 class="font-bold mb-4">Pilihan Editor</h3>
+                        <h3 class="font-bold mb-4">Artikel Pilihan</h3>
                         <div class="space-y-4">
-                            <?php $__currentLoopData = range(1, 3); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php $__currentLoopData = $randomArticles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $article): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <img src="https://ui-avatars.com/api/?name=Staff"
-                                        alt="Staff"
-                                        class="w-6 h-6 rounded-full">
-                                    <span class="text-sm">Penulis Pilihan</span>
-                                </div>
-                                <a href="#" class="text-sm font-medium hover:text-gray-600">
-                                    Cara Menulis Artikel yang Lebih Baik
+                                <a href="<?php echo e(route('articles.show', $article)); ?>" class="block">
+                                    <h4 class="text-sm font-medium hover:text-gray-600 line-clamp-2 mb-2"><?php echo e($article->title); ?></h4>
                                 </a>
+                                <div class="flex items-center gap-2">
+                                    <?php if($article->user->avatar): ?>
+                                        <img src="/avatars/<?php echo e($article->user->avatar); ?>" 
+                                             alt="<?php echo e($article->user->username); ?>" 
+                                             class="w-6 h-6 rounded-full object-cover">
+                                    <?php else: ?>
+                                        <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode($article->user->username)); ?>" 
+                                             alt="<?php echo e($article->user->username); ?>" 
+                                             class="w-6 h-6 rounded-full">
+                                    <?php endif; ?>
+                                    <a href="<?php echo e(route('profile.show', $article->user->username)); ?>" 
+                                       class="text-sm text-gray-600 hover:text-gray-800">
+                                        <?php echo e($article->user->username); ?>
+
+                                    </a>
+                                    <?php if($article->user->role === 'verified'): ?>
+                                        <span class="text-blue-600">
+                                            <i class="fas fa-check-circle text-xs"></i>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>

@@ -150,8 +150,7 @@
                             </a>
                             <form action="{{ route('admin.articles.destroy', $article) }}" 
                                   method="POST" 
-                                  class="inline-block"
-                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus artikel ini?');">
+                                  class="inline-block">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" 

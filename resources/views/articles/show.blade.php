@@ -6,7 +6,7 @@
     <h1 class="text-4xl font-bold font-serif mb-4 leading-tight">{{ $article->title }}</h1>
     
     <!-- Article Description -->
-    <p class="text-xl text-gray-600 mb-4 leading-relaxed">
+    <p class="text-xl text-gray-600 mb-4 leading-relaxed text-justify">
         {{ $article->description }}
     </p>
     <!-- Author Info & Article Meta -->
@@ -75,7 +75,13 @@
 
     <!-- Article Content -->
     <div class="prose max-w-none mb-8">
-        {!! $article->content !!}
+        <div class="max-w-[1200px] text-lg">
+            @foreach(preg_split('/\n\s*\n/', $article->content) as $paragraph)
+                @if(trim($paragraph))
+                    <p class="mb-6 text-justify">{{ $paragraph }}</p>
+                @endif
+            @endforeach
+        </div>
     </div>
 
     <!-- Tags Below -->
