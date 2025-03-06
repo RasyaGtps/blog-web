@@ -62,8 +62,8 @@ class User extends Authenticatable
      */
     public function getAvatarUrlAttribute()
     {
-        if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
+        if ($this->avatar && file_exists(public_path('avatars/' . $this->avatar))) {
+            return asset('avatars/' . $this->avatar);
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->username);
     }
@@ -89,7 +89,7 @@ class User extends Authenticatable
      */
     public function following()
     {
-        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
     }
 
     /**
@@ -97,7 +97,7 @@ class User extends Authenticatable
      */
     public function followers()
     {
-        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
     }
 
     /**
@@ -121,7 +121,7 @@ class User extends Authenticatable
     // Role Checkers
     public function isAdmin()
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->role === 'admin';
     }
 
     public function isVerified()
@@ -170,5 +170,10 @@ class User extends Authenticatable
     public function updateRole($role)
     {
         $this->update(['role' => $role]);
+    }
+
+    public function membershipRequests()
+    {
+        return $this->hasMany(MembershipRequest::class);
     }
 }

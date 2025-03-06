@@ -69,25 +69,25 @@
 
             <!-- Article Type (for verified users only) -->
             @if(auth()->user()->role === 'verified')
-                <div class="mb-6" x-data="{ type: '{{ old('type', 'free') }}' }">
+                <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Article Type</label>
-                    <div class="flex gap-4">
+                    <div class="flex gap-4" x-data="{ selectedType: '{{ old('type', 'free') }}' }">
                         <!-- Free Option -->
                         <label class="flex-1 cursor-pointer">
                             <input type="radio" 
                                    name="type" 
                                    value="free" 
-                                   x-model="type"
+                                   x-model="selectedType"
                                    class="hidden">
                             <div class="border rounded-lg p-4 transition-all duration-300 ease-in-out"
                                  :class="{
-                                     'bg-green-50 border-green-500 shadow-sm': type === 'free',
-                                     'bg-gray-50 border-gray-200 opacity-40': type === 'premium'
+                                     'bg-green-50 border-green-500 shadow-sm': selectedType === 'free',
+                                     'bg-gray-50 border-gray-200 opacity-40': selectedType === 'premium'
                                  }">
                                 <div class="flex items-center justify-center gap-3">
                                     <i class="fas fa-unlock text-lg"
-                                       :class="type === 'free' ? 'text-green-600' : 'text-gray-400'"></i>
-                                    <span class="font-medium" :class="type === 'free' ? 'text-green-700' : 'text-gray-500'">Free</span>
+                                       :class="selectedType === 'free' ? 'text-green-600' : 'text-gray-400'"></i>
+                                    <span class="font-medium" :class="selectedType === 'free' ? 'text-green-700' : 'text-gray-500'">Free</span>
                                 </div>
                             </div>
                         </label>
@@ -97,17 +97,17 @@
                             <input type="radio" 
                                    name="type" 
                                    value="premium" 
-                                   x-model="type"
+                                   x-model="selectedType"
                                    class="hidden">
                             <div class="border rounded-lg p-4 transition-all duration-300 ease-in-out"
                                  :class="{
-                                     'bg-yellow-50 border-yellow-500 shadow-sm': type === 'premium',
-                                     'bg-gray-50 border-gray-200 opacity-40': type === 'free'
+                                     'bg-yellow-50 border-yellow-500 shadow-sm': selectedType === 'premium',
+                                     'bg-gray-50 border-gray-200 opacity-40': selectedType === 'free'
                                  }">
                                 <div class="flex items-center justify-center gap-3">
                                     <i class="fas fa-star text-lg"
-                                       :class="type === 'premium' ? 'text-yellow-600' : 'text-gray-400'"></i>
-                                    <span class="font-medium" :class="type === 'premium' ? 'text-yellow-700' : 'text-gray-500'">Premium</span>
+                                       :class="selectedType === 'premium' ? 'text-yellow-600' : 'text-gray-400'"></i>
+                                    <span class="font-medium" :class="selectedType === 'premium' ? 'text-yellow-700' : 'text-gray-500'">Premium</span>
                                 </div>
                             </div>
                         </label>

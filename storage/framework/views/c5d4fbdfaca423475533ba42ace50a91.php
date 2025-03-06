@@ -14,7 +14,7 @@
                 <a href="<?php echo e(route('stories.index')); ?>" 
                    class="text-[#242424] hover:text-black text-sm flex items-center gap-1">
                     <i class="fas fa-book-reader"></i>
-                    Our Story
+                    Articles
                 </a>
             </li>
             <li>
@@ -61,11 +61,10 @@
                     <a href="<?php echo e(route('register')); ?>" 
                        class="bg-black text-white px-5 py-2.5 rounded-full text-sm hover:bg-[#242424] transition-colors flex items-center gap-1">
                         <i class="fas fa-user-plus"></i>
-                        Get started
+                        Sign up
                     </a>
                 </li>
             <?php endif; ?>
         </ul>
     </div>
-</nav>
-<?php /**PATH C:\project-rasya\blogging\resources\views/layouts/navigation.blade.php ENDPATH**/ ?>
+</nav><?php /**PATH C:\project-rasya\blogging\resources\views/layouts/navigation.blade.php ENDPATH**/ ?>

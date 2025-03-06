@@ -8,57 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <?php echo app('Illuminate\Foundation\Vite')('resources/css/app.css'); ?>
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            z-index: 1000;
-        }
-        .modal.active {
-            display: flex;
-        }
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 4px;
-            width: 100%;
-            max-width: 400px;
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .close-button {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #242424;
-        }
-        .password-container {
-            position: relative;
-        }
-        .password-toggle {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #666;
-        }
-        .form-input {
-            @apply w-full px-4 py-2 rounded border mb-4 focus:outline-none focus:border-gray-500;
-        }
-        .error-message {
-            @apply text-red-500 text-sm mb-2 hidden;
-        }
-    </style>
 </head>
 <body class="bg-[#f8f6f2] text-black font-['Georgia'] flex flex-col min-h-screen">
     <div class="bg-white w-full">
@@ -67,55 +16,48 @@
     
     <main class="flex justify-center items-center flex-col flex-grow px-4 py-20">
         <section class="hero max-w-[900px]">
-            <h1 class="text-[85px] font-bold leading-[1] mb-8 whitespace-nowrap">
-                Cerita & Ide Manusia
-            </h1>
-            <p class="text-2xl mb-8">
-                Sebuah Tempat membaca, menulis, dan memperdalam pemahaman Anda
-            </p>
+            <h1 class="text-[85px] font-bold leading-[1] mb-8 whitespace-nowrap">Cerita & Ide Manusia</h1>
+            <p class="text-2xl mb-8 text-center">Sebuah Tempat membaca, menulis, dan memperdalam pemahaman Anda</p>
         </section>
     </main>
 
     <?php echo $__env->make('layouts.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
-    <!-- Sign Up Modal -->
-    <div class="modal" id="signUpModal">
-        <div class="modal-content mx-auto my-auto" data-aos="fade-up">
-            <button class="close-button" id="closeModal">&times;</button>
+    <div class="hidden fixed inset-0 bg-white/95 z-[1000] items-center justify-center" id="signUpModal">
+        <div class="bg-white p-8 rounded shadow-lg w-full max-w-md mx-auto my-auto relative" data-aos="fade-up">
+            <button class="absolute top-4 right-4 text-2xl text-[#242424] hover:text-gray-700" id="closeModal">&times;</button>
             <h2 class="text-2xl font-bold mb-4">Sign up with email</h2>
             <p class="text-gray-600 mb-6">Enter your details to create an account.</p>
             
             <form id="registerForm" class="space-y-4">
                 <div>
-                    <div class="error-message" id="nameError"></div>
-                    <input type="text" name="name" placeholder="Full Name" class="form-input">
+                    <div class="hidden text-red-500 text-sm mb-2" id="nameError"></div>
+                    <input type="text" name="name" placeholder="Full Name" class="w-full px-4 py-2 rounded border mb-4 focus:outline-none focus:border-gray-500">
                 </div>
 
                 <div>
-                    <div class="error-message" id="usernameError"></div>
-                    <input type="text" name="username" placeholder="Username" class="form-input">
+                    <div class="hidden text-red-500 text-sm mb-2" id="usernameError"></div>
+                    <input type="text" name="username" placeholder="Username" class="w-full px-4 py-2 rounded border mb-4 focus:outline-none focus:border-gray-500">
                 </div>
 
                 <div>
-                    <div class="error-message" id="emailError"></div>
-                    <input type="email" name="email" placeholder="Email" class="form-input">
+                    <div class="hidden text-red-500 text-sm mb-2" id="emailError"></div>
+                    <input type="email" name="email" placeholder="Email" class="w-full px-4 py-2 rounded border mb-4 focus:outline-none focus:border-gray-500">
                 </div>
 
-                <div class="password-container">
-                    <div class="error-message" id="passwordError"></div>
-                    <input type="password" name="password" placeholder="Password" class="form-input">
-                    <i class="password-toggle fas fa-eye"></i>
+                <div class="relative">
+                    <div class="hidden text-red-500 text-sm mb-2" id="passwordError"></div>
+                    <input type="password" name="password" placeholder="Password" class="w-full px-4 py-2 rounded border mb-4 focus:outline-none focus:border-gray-500">
+                    <i class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 cursor-pointer password-toggle fas fa-eye"></i>
                 </div>
 
-                <div class="password-container">
-                    <div class="error-message" id="password_confirmationError"></div>
-                    <input type="password" name="password_confirmation" placeholder="Confirm Password" class="form-input">
-                    <i class="password-toggle fas fa-eye"></i>
+                <div class="relative">
+                    <div class="hidden text-red-500 text-sm mb-2" id="password_confirmationError"></div>
+                    <input type="password" name="password_confirmation" placeholder="Confirm Password" class="w-full px-4 py-2 rounded border mb-4 focus:outline-none focus:border-gray-500">
+                    <i class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 cursor-pointer password-toggle fas fa-eye"></i>
                 </div>
 
-                <button type="submit" class="w-full bg-black text-white py-2 rounded-full hover:bg-[#242424] transition-colors">
-                    Create Account
-                </button>
+                <button type="submit" class="w-full bg-black text-white py-2 rounded-full hover:bg-[#242424] transition-colors">Create Account</button>
             </form>
         </div>
     </div>
@@ -127,21 +69,21 @@
             once: true
         });
 
-        // Modal handling
         const modal = document.getElementById('signUpModal');
         const closeModal = document.getElementById('closeModal');
 
         closeModal.addEventListener('click', function() {
-            modal.classList.remove('active');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
         });
 
         modal.addEventListener('click', function(e) {
             if (e.target === modal) {
-                modal.classList.remove('active');
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
             }
         });
 
-        // Password toggle
         document.querySelectorAll('.password-toggle').forEach(toggle => {
             toggle.addEventListener('click', function() {
                 const input = this.previousElementSibling;
@@ -157,12 +99,10 @@
             });
         });
 
-        // Form submission
         const registerForm = document.getElementById('registerForm');
         registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Clear previous errors
             document.querySelectorAll('.error-message').forEach(el => {
                 el.textContent = '';
                 el.style.display = 'none';
@@ -185,10 +125,10 @@
 
                 if (response.ok) {
                     alert('Registration successful!');
-                    modal.classList.remove('active');
+                    modal.classList.remove('flex');
+                    modal.classList.add('hidden');
                     window.location.reload();
                 } else {
-                    // Display validation errors
                     Object.keys(result.errors || {}).forEach(key => {
                         const errorEl = document.getElementById(key + 'Error');
                         if (errorEl) {

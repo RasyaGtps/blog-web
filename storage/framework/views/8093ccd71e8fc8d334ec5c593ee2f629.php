@@ -181,5 +181,4 @@ unset($__errorArgs, $__bag); ?>
         });
     </script>
 </body>
-</html>
-<?php /**PATH C:\project-rasya\blogging\resources\views/auth/login.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\project-rasya\blogging\resources\views/auth/login.blade.php ENDPATH**/ ?>

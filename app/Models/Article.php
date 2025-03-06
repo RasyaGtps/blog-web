@@ -16,10 +16,13 @@ class Article extends Model
      */
     protected $fillable = [
         'title',
+        'slug',
         'description',
         'content',
-        'views',
+        'cover_image',
         'user_id',
+        'views',
+        'read_time',
         'type'
     ];
 
@@ -30,6 +33,8 @@ class Article extends Model
      */
     protected $casts = [
         'views' => 'integer',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s'
     ];
 
     /**
@@ -63,5 +68,10 @@ class Article extends Model
     public function isPremium()
     {
         return $this->type === 'premium';
+    }
+
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->setTimezone(new \DateTimeZone('Asia/Jakarta'))->format('Y-m-d H:i:s');
     }
 }

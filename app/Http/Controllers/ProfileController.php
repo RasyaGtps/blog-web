@@ -17,12 +17,34 @@ use Illuminate\Support\Str;
 class ProfileController extends Controller
 {
     /**
-     * Show the profile page
+     * Show user's public profile
+     */
+    public function show($username)
+    {
+        $user = User::where('username', $username)
+            ->withCount(['followers', 'following', 'articles'])
+            ->firstOrFail();
+
+        $articles = $user->articles()
+            ->latest()
+            ->paginate(9);
+
+        return view('profile.show', [
+            'user' => $user,
+            'articles' => $articles
+        ]);
+    }
+
+    /**
+     * Show the profile settings page
      */
     public function index()
     {
         $user = Auth::user();
-        return view('settings.profile', compact('user'));
+        $followersCount = $user->followers()->count();
+        $followingCount = $user->following()->count();
+        
+        return view('settings.profile', compact('user', 'followersCount', 'followingCount'));
     }
 
     /**
@@ -51,8 +73,7 @@ class ProfileController extends Controller
             'bio' => 'nullable|string|max:1000'
         ]);
 
-        $user->fill($validated);
-        $user->save();
+        $user->update($validated);
 
         return back()->with('success', 'Profile updated successfully!');
     }
@@ -63,13 +84,20 @@ class ProfileController extends Controller
     public function updateAvatar(Request $request)
     {
         $request->validate([
-            'avatar' => 'required|image',
+            'avatar' => 'required|image|max:2048',
         ]);
+
+        $user = Auth::user();
+
+        // Delete old avatar if exists
+        if ($user->avatar && file_exists(public_path('avatars/' . $user->avatar))) {
+            unlink(public_path('avatars/' . $user->avatar));
+        }
 
         $avatarName = time().'.'.$request->avatar->getClientOriginalExtension();
         $request->avatar->move(public_path('avatars'), $avatarName);
 
-        Auth()->user()->update(['avatar' => $avatarName]);
+        $user->update(['avatar' => $avatarName]);
 
         return back()->with('success', 'Avatar berhasil diperbarui.');
     }
@@ -201,5 +229,18 @@ class ProfileController extends Controller
         return response()->json([
             'following' => $user->following()->paginate(20)
         ]);
+    }
+
+    public function adminShow()
+    {
+        $user = auth()->user()
+            ->loadCount(['articles', 'followers', 'following']);
+            
+        $articles = $user->articles()
+            ->with('comments')
+            ->latest()
+            ->paginate(6);
+        
+        return view('admin.profile', compact('user', 'articles'));
     }
 }

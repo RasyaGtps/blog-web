@@ -12,20 +12,45 @@
     <!-- Author Info & Article Meta -->
     <div class="flex items-center gap-4 mb-8">
         <div class="flex items-center gap-3">
-            <img src="https://ui-avatars.com/api/?name={{ urlencode($article->user->username) }}" 
-                 alt="{{ $article->user->username }}" 
-                 class="w-12 h-12 rounded-full">
+            @if($article->user->avatar)
+                <img src="/avatars/{{ $article->user->avatar }}" 
+                     alt="{{ $article->user->username }}" 
+                     class="w-12 h-12 rounded-full object-cover">
+            @else
+                <img src="https://ui-avatars.com/api/?name={{ urlencode($article->user->username) }}" 
+                     alt="{{ $article->user->username }}" 
+                     class="w-12 h-12 rounded-full">
+            @endif
             <div>
                 <div class="flex items-center gap-2">
-                    <a href="#" class="font-medium hover:text-gray-600">{{ $article->user->username }}</a>
+                    <a href="{{ route('profile.show', $article->user->username) }}" class="font-medium hover:text-gray-600">
+                        {{ $article->user->username }}
+                    </a>
                     @if($article->user->role === 'verified')
                         <span class="text-blue-600">
                             <i class="fas fa-check-circle"></i>
                         </span>
                     @endif
-                    <button class="text-green-600 hover:text-green-700 px-3 py-1 rounded-full border border-green-600 text-sm">
-                        Follow
-                    </button>
+                    @auth
+                        @if(auth()->user()->id !== $article->user->id)
+                            @if(auth()->user()->isFollowing($article->user))
+                                <form action="{{ route('user.unfollow', $article->user) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-green-600 hover:text-green-700 px-3 py-1 rounded-full border border-green-600 text-sm">
+                                        Following
+                                    </button>
+                                </form>
+                            @else
+                                <form action="{{ route('user.follow', $article->user) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="text-green-600 hover:text-green-700 px-3 py-1 rounded-full border border-green-600 text-sm">
+                                        Follow
+                                    </button>
+                                </form>
+                            @endif
+                        @endif
+                    @endauth
                 </div>
                 <div class="flex items-center gap-2 text-sm text-gray-500 mt-1">
                     <span>{{ $article->read_time ?? '5' }} min read</span>
@@ -85,10 +110,18 @@
         @auth
             <div class="mb-8">
                 <div class="flex items-center gap-2 mb-2">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}" 
-                         alt="{{ auth()->user()->name }}" 
-                         class="w-8 h-8 rounded-full">
-                    <span class="font-medium">{{ auth()->user()->name }}</span>
+                    <a href="{{ route('profile.show', auth()->user()->username) }}" class="flex items-center gap-2">
+                        @if(auth()->user()->avatar)
+                            <img src="{{ asset('avatars/' . auth()->user()->avatar) }}" 
+                                 alt="{{ auth()->user()->username }}" 
+                                 class="w-8 h-8 rounded-full object-cover">
+                        @else
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->username) }}" 
+                                 alt="{{ auth()->user()->username }}" 
+                                 class="w-8 h-8 rounded-full">
+                        @endif
+                        <span class="font-medium hover:text-blue-600">{{ auth()->user()->username }}</span>
+                    </a>
                     @if(auth()->user()->role === 'verified')
                         <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
                             <i class="fas fa-check-circle text-xs"></i>
@@ -100,13 +133,13 @@
                     <form action="{{ route('comments.store', $article) }}" method="POST">
                         @csrf
                         <textarea name="content" 
-                                  class="w-full p-3 bg-gray-200 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
+                                  class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
                                   rows="1"
                                   placeholder="What are your thoughts?"
                                   required></textarea>
                         <div class="flex justify-end mt-2">
                             <button type="submit" 
-                                    class="bg-green-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-green-700">
+                                    class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
                                 Respond
                             </button>
                         </div>
@@ -115,7 +148,7 @@
             </div>
         @else
             <div class="bg-gray-50 rounded-lg p-4 text-center mb-8">
-                <a href="{{ route('login') }}" class="text-green-600 hover:underline">Sign in</a> to leave a response.
+                <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Sign in</a> to leave a response.
             </div>
         @endauth
 
@@ -123,13 +156,24 @@
         <div class="space-y-6">
             @foreach($article->comments()->whereNull('parent_id')->latest()->get() as $comment)
                 <div class="flex gap-3" x-data="{ showReplyForm: false }">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode($comment->user->name) }}" 
-                         alt="{{ $comment->user->name }}" 
-                         class="w-8 h-8 rounded-full">
+                    <a href="{{ route('profile.show', $comment->user->username) }}" class="flex-shrink-0">
+                        @if($comment->user->avatar)
+                            <img src="{{ asset('avatars/' . $comment->user->avatar) }}" 
+                                 alt="{{ $comment->user->username }}" 
+                                 class="w-8 h-8 rounded-full object-cover">
+                        @else
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode($comment->user->username) }}" 
+                                 alt="{{ $comment->user->username }}" 
+                                 class="w-8 h-8 rounded-full">
+                        @endif
+                    </a>
+
                     <div class="flex-1">
                         <!-- Comment Header -->
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="font-medium">{{ $comment->user->name }}</span>
+                            <a href="{{ route('profile.show', $comment->user->username) }}" class="font-medium hover:text-blue-600">
+                                {{ $comment->user->username }}
+                            </a>
                             @if($comment->user->id === $article->user_id)
                                 <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
                                     <i class="fas fa-pen text-xs"></i>
@@ -171,12 +215,20 @@
                         @auth
                             <div x-show="showReplyForm" x-cloak class="mt-4">
                                 <div class="flex items-center gap-2 mb-2">
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}" 
-                                         alt="{{ auth()->user()->name }}" 
-                                         class="w-8 h-8 rounded-full">
-                                    <span class="font-medium">{{ auth()->user()->name }}</span>
+                                    <a href="{{ route('profile.show', auth()->user()->username) }}" class="flex items-center gap-2">
+                                        @if(auth()->user()->avatar)
+                                            <img src="{{ asset('avatars/' . auth()->user()->avatar) }}" 
+                                                 alt="{{ auth()->user()->username }}" 
+                                                 class="w-8 h-8 rounded-full object-cover">
+                                        @else
+                                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->username) }}" 
+                                                 alt="{{ auth()->user()->username }}" 
+                                                 class="w-8 h-8 rounded-full">
+                                        @endif
+                                        <span class="font-medium hover:text-blue-600">{{ auth()->user()->username }}</span>
+                                    </a>
                                     @if(auth()->user()->role === 'verified')
-                                        <span class="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
                                             <i class="fas fa-check-circle text-xs"></i>
                                             Verified
                                         </span>
@@ -187,7 +239,7 @@
                                         @csrf
                                         <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                                         <textarea name="content" 
-                                                  class="w-full p-3 bg-gray-200 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
+                                                  class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
                                                   rows="1"
                                                   placeholder="What are your thoughts?"
                                                   required></textarea>
@@ -198,7 +250,7 @@
                                                 Cancel
                                             </button>
                                             <button type="submit" 
-                                                    class="bg-green-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-green-700">
+                                                    class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
                                                 Respond
                                             </button>
                                         </div>
@@ -212,12 +264,22 @@
                             <div class="mt-4 space-y-4">
                                 @foreach($comment->replies as $reply)
                                     <div class="flex gap-3 pl-8">
-                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($reply->user->name) }}" 
-                                             alt="{{ $reply->user->name }}" 
-                                             class="w-8 h-8 rounded-full">
+                                        <a href="{{ route('profile.show', $reply->user->username) }}" class="flex-shrink-0">
+                                            @if($reply->user->avatar)
+                                                <img src="{{ asset('avatars/' . $reply->user->avatar) }}" 
+                                                     alt="{{ $reply->user->username }}" 
+                                                     class="w-8 h-8 rounded-full object-cover">
+                                            @else
+                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($reply->user->username) }}" 
+                                                     alt="{{ $reply->user->username }}" 
+                                                     class="w-8 h-8 rounded-full">
+                                            @endif
+                                        </a>
                                         <div class="flex-1">
                                             <div class="flex items-center gap-2 mb-1">
-                                                <span class="font-medium">{{ $reply->user->name }}</span>
+                                                <a href="{{ route('profile.show', $reply->user->username) }}" class="font-medium hover:text-blue-600">
+                                                    {{ $reply->user->username }}
+                                                </a>
                                                 @if($reply->user->id === $article->user_id)
                                                     <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
                                                         <i class="fas fa-pen text-xs"></i>

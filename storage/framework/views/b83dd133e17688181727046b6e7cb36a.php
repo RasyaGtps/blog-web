@@ -1,0 +1,1 @@
+components.layouts.auth<?php /**PATH C:\project-rasya\blogging\storage\framework\views/ea77ab6f566f7946f62bae1a91457b30.blade.php ENDPATH**/ ?>
