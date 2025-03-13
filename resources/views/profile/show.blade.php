@@ -39,7 +39,9 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
-                                            class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full hover:bg-red-500 hover:text-white group">
+                                            class="flex items-center gap-2 bg-gray-100 text-gray-800 px-6 py-2.5 rounded-full hover:bg-red-500 hover:text-white group transition-all">
+                                        <i class="fas fa-user-check group-hover:hidden"></i>
+                                        <i class="fas fa-user-times hidden group-hover:block"></i>
                                         <span class="block group-hover:hidden">Following</span>
                                         <span class="hidden group-hover:block">Unfollow</span>
                                     </button>
@@ -47,8 +49,10 @@
                             @else
                                 <form action="{{ route('user.follow', $user) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">
-                                        Follow
+                                    <button type="submit" 
+                                            class="flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-full hover:bg-blue-700 transition-colors">
+                                        <i class="fas fa-user-plus"></i>
+                                        <span>Follow</span>
                                     </button>
                                 </form>
                             @endif
@@ -67,11 +71,11 @@
                         <span class="block font-bold text-gray-900">{{ $user->articles_count }}</span>
                         <span class="text-gray-600">Articles</span>
                     </div>
-                    <a href="{{ route('user.followers', $user) }}" class="text-center hover:text-blue-600">
+                    <a href="{{ route('user.followers', $user->username) }}" class="text-center hover:text-blue-600">
                         <span class="block font-bold text-gray-900">{{ $user->followers_count }}</span>
                         <span class="text-gray-600">Followers</span>
                     </a>
-                    <a href="{{ route('user.following', $user) }}" class="text-center hover:text-blue-600">
+                    <a href="{{ route('user.following', $user->username) }}" class="text-center hover:text-blue-600">
                         <span class="block font-bold text-gray-900">{{ $user->following_count }}</span>
                         <span class="text-gray-600">Following</span>
                     </a>

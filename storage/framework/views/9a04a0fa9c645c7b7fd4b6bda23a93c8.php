@@ -40,7 +40,9 @@
                                     <?php echo csrf_field(); ?>
                                     <?php echo method_field('DELETE'); ?>
                                     <button type="submit" 
-                                            class="bg-gray-200 text-gray-800 px-6 py-2 rounded-full hover:bg-red-500 hover:text-white group">
+                                            class="flex items-center gap-2 bg-gray-100 text-gray-800 px-6 py-2.5 rounded-full hover:bg-red-500 hover:text-white group transition-all">
+                                        <i class="fas fa-user-check group-hover:hidden"></i>
+                                        <i class="fas fa-user-times hidden group-hover:block"></i>
                                         <span class="block group-hover:hidden">Following</span>
                                         <span class="hidden group-hover:block">Unfollow</span>
                                     </button>
@@ -48,8 +50,10 @@
                             <?php else: ?>
                                 <form action="<?php echo e(route('user.follow', $user)); ?>" method="POST">
                                     <?php echo csrf_field(); ?>
-                                    <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">
-                                        Follow
+                                    <button type="submit" 
+                                            class="flex items-center gap-2 bg-blue-600 text-white px-6 py-2.5 rounded-full hover:bg-blue-700 transition-colors">
+                                        <i class="fas fa-user-plus"></i>
+                                        <span>Follow</span>
                                     </button>
                                 </form>
                             <?php endif; ?>
@@ -68,11 +72,11 @@
                         <span class="block font-bold text-gray-900"><?php echo e($user->articles_count); ?></span>
                         <span class="text-gray-600">Articles</span>
                     </div>
-                    <a href="<?php echo e(route('user.followers', $user)); ?>" class="text-center hover:text-blue-600">
+                    <a href="<?php echo e(route('user.followers', $user->username)); ?>" class="text-center hover:text-blue-600">
                         <span class="block font-bold text-gray-900"><?php echo e($user->followers_count); ?></span>
                         <span class="text-gray-600">Followers</span>
                     </a>
-                    <a href="<?php echo e(route('user.following', $user)); ?>" class="text-center hover:text-blue-600">
+                    <a href="<?php echo e(route('user.following', $user->username)); ?>" class="text-center hover:text-blue-600">
                         <span class="block font-bold text-gray-900"><?php echo e($user->following_count); ?></span>
                         <span class="text-gray-600">Following</span>
                     </a>
@@ -99,7 +103,7 @@
                             <div class="p-4 flex flex-col h-full">
                                 <div class="flex-1">
                                     <h3 class="font-bold text-lg mb-2 truncate"><?php echo e($article->title); ?></h3>
-                                    <p class="text-gray-600 text-sm line-clamp-2"><?php echo e($article->description); ?></p>
+                                    <p class="text-gray-600 text-sm whitespace-pre-line"><?php echo e($article->description); ?></p>
                                 </div>
                                 <div class="flex items-center justify-between text-sm text-gray-500 mt-4">
                                     <span><?php echo e($article->created_at->format('M d, Y')); ?></span>

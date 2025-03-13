@@ -9,16 +9,20 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\StoryController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController as MainUserController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\MembershipController as AdminMembershipController;
+use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+
+// Public Routes
+Route::get('/users/{username}/following', [MainUserController::class, 'following'])->name('user.following');
+Route::get('/users/{username}/followers', [MainUserController::class, 'followers'])->name('user.followers');
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -45,8 +49,6 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/follow/{user}', [ProfileController::class, 'follow'])->name('user.follow');
     Route::delete('/unfollow/{user}', [ProfileController::class, 'unfollow'])->name('user.unfollow');
-    Route::get('/users/{user}/followers', [ProfileController::class, 'followers'])->name('user.followers');
-    Route::get('/users/{user}/following', [ProfileController::class, 'following'])->name('user.following');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
