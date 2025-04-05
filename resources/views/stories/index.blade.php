@@ -84,7 +84,7 @@
                             alt="{{ $article->user->username }}"
                             class="w-6 h-6 rounded-full">
                         @endif
-                        <span class="text-sm">{{ $article->user->username }}</span>
+                        <a href="{{ route('profile.show', $article->user->username) }}" class="text-sm">{{ $article->user->username }}</a>
                         @if($article->user->role === 'verified')
                         <span class="text-sm text-blue-600">
                             <i class="fas fa-check-circle"></i>

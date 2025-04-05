@@ -12,8 +12,6 @@ class UserController extends Controller
     {
         try {
             $user = User::with(['articles', 'followers', 'following'])->findOrFail($id);
-
-            // Menghitung jumlah followers dan following
             $followersCount = $user->followers()->count();
             $followingCount = $user->following()->count();
             $articlesCount = $user->articles()->count();

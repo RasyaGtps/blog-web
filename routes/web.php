@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\MembershipController as AdminMembershipController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\ChatController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -61,6 +62,9 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/membership/request', [MembershipController::class, 'request'])->name('membership.request');
     Route::delete('/membership/request/{membershipRequest}', [MembershipController::class, 'cancel'])->name('membership.cancel');
+
+    // Chat Routes
+    Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show');
 });
 
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');

@@ -38,7 +38,7 @@
                     <div>
                         <div class="flex items-center gap-2">
                             <a href="{{ route('profile.show', $followed->username) }}" 
-                               class="font-medium hover:text-blue-600 no-underline transition-colors">
+                               class="font-medium hover:text-gray-600 no-underline transition-colors">
                                 {{ $followed->username }}
                             </a>
                             @if($followed->role === 'verified')
