@@ -55,13 +55,14 @@ class AuthController extends Controller
     {
         try {
             $request->validate([
-                'login' => 'required|string',
+                'username' => 'required|string', // Validate the username field
                 'password' => 'required|string',
             ]);
 
-            $user = User::where('email', $request->login)
-                        ->orWhere('username', $request->login)
-                        ->first();
+            // Debugging: Log the username
+            \Log::info('Login attempt with username: ' . $request->username);
+
+            $user = User::where('username', $request->username)->first();
 
             if (! $user || ! Hash::check($request->password, $user->password)) {
                 return response()->json([
@@ -111,4 +112,4 @@ class AuthController extends Controller
             ], 500);
         }
     }
-} 
+}

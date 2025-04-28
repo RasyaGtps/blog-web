@@ -15,6 +15,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Public Routes
 Route::get('/users/{id}', [UserController::class, 'show']);
+Route::get('/users/username/{username}', [UserController::class, 'getUserByUsername']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // User Routes
@@ -29,10 +30,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy']);
     
     // Following System
-    Route::post('/users/{user}/follow', [ProfileController::class, 'follow']);
-    Route::delete('/users/{user}/unfollow', [ProfileController::class, 'unfollow']);
-    Route::get('/users/{user}/followers', [ProfileController::class, 'followers']);
-    Route::get('/users/{user}/following', [ProfileController::class, 'following']);
+    Route::post('/users/{username}/follow', [ProfileController::class, 'apiFollow']);
+    Route::delete('/users/{username}/unfollow', [ProfileController::class, 'apiUnfollow']);
+    Route::get('/users/{username}/followers', [ProfileController::class, 'apiFollowers']);
+    Route::get('/users/{username}/following', [ProfileController::class, 'apiFollowing']);
     
     // Article Routes
     Route::post('/articles', [ArticleController::class, 'store']);

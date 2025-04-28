@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     @vite('resources/css/app.css')
 </head>
-<body class="bg-[#f8f6f2] text-black font-['Georgia'] flex flex-col min-h-screen">
-    <div class="bg-white w-full border-b">
+<body class="bg-[#f8f6f2] text-black flex flex-col min-h-screen">
+    <div class="bg-white w-full border-b text-sm">
         @include('layouts.navigation')
     </div>
     
@@ -134,10 +134,10 @@
         </section>
 
         <!-- CTA Section -->
-        <section class="py-20 bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+        <section class="py-20 bg-gradient-to-r bg-[#FDF6F0] text-black">
             <div class="max-w-4xl mx-auto px-4 text-center">
                 <h2 class="text-4xl font-bold mb-6" data-aos="fade-up">Mulai Menulis Cerita Anda</h2>
-                <p class="text-xl mb-8 text-blue-100" data-aos="fade-up" data-aos-delay="100">
+                <p class="text-xl mb-8 text-black" data-aos="fade-up" data-aos-delay="100">
                     Bergabunglah dengan ribuan penulis yang telah membagikan ide dan pengalaman mereka di ByRead.
                 </p>
                 @guest

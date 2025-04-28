@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -85,5 +86,43 @@ class UserController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    // API untuk mendapatkan profil user berdasarkan username
+    public function getUserByUsername($username)
+    {
+        $user = User::where('username', $username)
+            ->withCount(['followers', 'following', 'articles'])
+            ->first();
+            
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+        
+        return response()->json([
+            'user' => $user
+        ]);
+    }
+    
+    // API untuk memperbarui profil user
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,'.$user->id,
+            'email' => 'required|email|max:255|unique:users,email,'.$user->id,
+            'bio' => 'nullable|string|max:1000'
+        ]);
+        
+        $user->update($validated);
+        
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user
+        ]);
     }
 } 

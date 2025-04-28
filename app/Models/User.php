@@ -30,7 +30,9 @@ class User extends Authenticatable
         'membership',
         'membership_expires_at',
         'is_admin',
-        'is_verified'
+        'is_verified',
+        'online_status',
+        'last_seen',
     ];
 
     /**
@@ -54,6 +56,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'membership_expires_at' => 'datetime',
+            'online_status' => 'integer',
+            'last_seen' => 'datetime',
         ];
     }
 

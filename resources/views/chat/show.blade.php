@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Chat dengan {{ $user->name }} - ByRead</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     @vite('resources/css/app.css')
@@ -20,14 +21,12 @@
     <div class="max-w-4xl mx-auto px-4 py-8">
         <!-- Back Button and Status -->
         <div class="flex items-center justify-between mb-6">
-            <a href="{{ url()->previous() }}" class="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
+            <a href="{{ route('articles.show', $user->articles()->latest()->first()) }}" 
+               class="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors">
                 <i class="fas fa-arrow-left"></i>
                 <span>Kembali</span>
             </a>
-            <div class="flex items-center gap-2">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span class="text-sm text-gray-600">Online</span>
-            </div>
+            @livewire('user-online-status', ['user' => $user])
         </div>
 
         <!-- Chat Box with Shadow and Border -->

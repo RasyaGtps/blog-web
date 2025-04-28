@@ -14,6 +14,7 @@ class Chat extends Component
     public $message = '';
     public $messages = [];
     public $receiver;
+    public $shouldScroll = true;
 
     public function mount($userId)
     {
@@ -24,6 +25,7 @@ class Chat extends Component
 
     public function loadMessages()
     {
+        $oldCount = count($this->messages);
         $this->messages = Message::where(function($query) {
             $query->where('from_user_id', auth()->id())
                   ->where('to_user_id', $this->userId);
@@ -34,6 +36,11 @@ class Chat extends Component
         ->with(['fromUser', 'toUser'])
         ->orderBy('created_at', 'asc')
         ->get();
+
+        // Only dispatch scroll event if new messages were added
+        if (count($this->messages) > $oldCount) {
+            $this->dispatch('newMessage');
+        }
     }
 
     public function sendMessage()
@@ -50,9 +57,14 @@ class Chat extends Component
 
         $this->message = '';
         $this->loadMessages();
+        
+        // Force scroll to bottom on send
+        $this->dispatch('scrollToBottom');
+    }
 
-        // Broadcast event untuk real-time update
-        $this->dispatch('messageReceived');
+    public function updateScroll($value)
+    {
+        $this->shouldScroll = $value;
     }
 
     #[On('messageReceived')]

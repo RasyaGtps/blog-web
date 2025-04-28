@@ -195,8 +195,9 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function apiFollow(User $user)
+    public function apiFollow($username)
     {
+        $user = User::where('username', $username)->firstOrFail();
         $follower = auth()->user();
         $follower->following()->attach($user->id);
 
@@ -206,8 +207,9 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function apiUnfollow(User $user)
+    public function apiUnfollow($username)
     {
+        $user = User::where('username', $username)->firstOrFail();
         $follower = auth()->user();
         $follower->following()->detach($user->id);
 
@@ -217,17 +219,47 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function apiFollowers(User $user)
+    public function apiFollowers($username)
     {
+        $user = User::where('username', $username)->firstOrFail();
+        
+        // Pastikan user yang ditemukan
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+        
+        // Ambil data follower dengan pagination
+        $followers = $user->followers()->paginate(20);
+        
         return response()->json([
-            'followers' => $user->followers()->paginate(20)
+            'username' => $user->username,
+            'name' => $user->name,
+            'followers_count' => $user->followers()->count(),
+            'followers' => $followers
         ]);
     }
 
-    public function apiFollowing(User $user)
+    public function apiFollowing($username)
     {
+        $user = User::where('username', $username)->firstOrFail();
+        
+        // Pastikan user yang ditemukan
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+        
+        // Ambil data following dengan pagination
+        $following = $user->following()->paginate(20);
+        
         return response()->json([
-            'following' => $user->following()->paginate(20)
+            'username' => $user->username,
+            'name' => $user->name,
+            'following_count' => $user->following()->count(),
+            'following' => $following
         ]);
     }
 

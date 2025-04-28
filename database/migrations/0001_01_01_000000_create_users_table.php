@@ -23,6 +23,8 @@ return new class extends Migration
             $table->enum('role', ['user', 'admin', 'verified'])->default('user');
             $table->enum('membership', ['free', 'basic', 'premium'])->default('free');
             $table->timestamp('membership_expires_at')->nullable();
+            $table->boolean('online_status')->default(false);
+            $table->timestamp('last_seen')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -37,7 +39,7 @@ return new class extends Migration
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
-            $table->string('token');
+            $table->string('token')->nullable();
             $table->timestamp('created_at')->nullable();
         });
 

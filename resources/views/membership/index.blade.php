@@ -17,15 +17,15 @@
 
     <div class="bg-[#FDF6F0]">
         @if(session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative max-w-[1200px] mx-auto mt-4" role="alert">
-                <span class="block sm:inline">{{ session('error') }}</span>
-            </div>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative max-w-[1200px] mx-auto mt-4" role="alert">
+            <span class="block sm:inline">{{ session('error') }}</span>
+        </div>
         @endif
 
         @if(session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative max-w-[1200px] mx-auto mt-4" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
-            </div>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative max-w-[1200px] mx-auto mt-4" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
         @endif
 
         <div class="max-w-[1200px] mx-auto px-4 py-16">
@@ -36,13 +36,13 @@
                 </p>
                 <div class="flex items-center justify-center gap-4">
                     @guest
-                        <a href="{{ route('login') }}" class="bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors">
-                            Masuk untuk Mulai
-                        </a>
+                    <a href="{{ route('login') }}" class="bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors">
+                        Masuk untuk Mulai
+                    </a>
                     @else
-                        <a href="{{ route('articles.create') }}" class="bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors">
-                            Mulai Menulis
-                        </a>
+                    <a href="{{ route('articles.create') }}" class="bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors">
+                        Mulai Menulis
+                    </a>
                     @endguest
                     <a href="#pricing" class="border-2 border-black px-8 py-3 rounded-full hover:bg-black hover:text-white transition-colors">
                         Lihat Paket
@@ -124,19 +124,19 @@
                             </li>
                         </ul>
                         @guest
-                            <a href="{{ route('register') }}" class="block w-full py-3 text-center border-2 border-black rounded-full hover:bg-black hover:text-white transition-colors">
-                                Daftar Sekarang
-                            </a>
+                        <a href="{{ route('register') }}" class="block w-full py-3 text-center border-2 border-black rounded-full hover:bg-black hover:text-white transition-colors">
+                            Daftar Sekarang
+                        </a>
                         @else
-                            @if(Auth::user()->membership === 'free')
-                                <button disabled class="w-full py-3 border-2 border-gray-300 text-gray-500 rounded-full cursor-not-allowed">
-                                    Paket Saat Ini
-                                </button>
-                            @else
-                                <button disabled class="w-full py-3 border-2 border-gray-300 text-gray-500 rounded-full cursor-not-allowed">
-                                    {{ Auth::user()->membership === 'basic' ? 'Paket Dasar' : 'Paket Premium' }}
-                                </button>
-                            @endif
+                        @if(Auth::user()->membership === 'free')
+                        <button disabled class="w-full py-3 border-2 border-gray-300 text-gray-500 rounded-full cursor-not-allowed">
+                            Paket Saat Ini
+                        </button>
+                        @else
+                        <button disabled class="w-full py-3 border-2 border-gray-300 text-gray-500 rounded-full cursor-not-allowed">
+                            {{ Auth::user()->membership === 'basic' ? 'Paket Dasar' : 'Paket Premium' }}
+                        </button>
+                        @endif
                         @endguest
                     </div>
 
@@ -167,23 +167,23 @@
                             </li>
                         </ul>
                         @guest
-                            <a href="{{ route('login') }}" class="block w-full py-3 text-center bg-black text-white rounded-full hover:bg-gray-800 transition-colors">
-                                Masuk untuk Berlangganan
-                            </a>
+                        <a href="{{ route('login') }}" class="block w-full py-3 text-center bg-black text-white rounded-full hover:bg-gray-800 transition-colors">
+                            Masuk untuk Berlangganan
+                        </a>
                         @else
-                            @if(Auth::user()->membership === 'basic' || Auth::user()->membership === 'premium')
-                                <button disabled class="w-full py-3 border-2 border-gray-300 text-gray-500 rounded-full cursor-not-allowed">
-                                    Paket Saat Ini
-                                </button>
-                            @else
-                                <form action="{{ route('membership.request') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="type" value="basic">
-                                    <button type="submit" class="w-full py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors">
-                                        Pilih Paket Dasar
-                                    </button>
-                                </form>
-                            @endif
+                        @if(Auth::user()->membership === 'basic' || Auth::user()->membership === 'premium')
+                        <button disabled class="w-full py-3 border-2 border-gray-300 text-gray-500 rounded-full cursor-not-allowed">
+                            Paket Saat Ini
+                        </button>
+                        @else
+                        <form action="{{ route('membership.request') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="type" value="basic">
+                            <button type="submit" class="w-full py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors">
+                                Pilih Paket Dasar
+                            </button>
+                        </form>
+                        @endif
                         @endguest
                     </div>
 
@@ -215,31 +215,31 @@
                             </li>
                         </ul>
                         @guest
-                            <a href="{{ route('login') }}" class="block w-full py-3 text-center border-2 border-black rounded-full hover:bg-black hover:text-white transition-colors">
-                                Masuk untuk Berlangganan
-                            </a>
+                        <a href="{{ route('login') }}" class="block w-full py-3 text-center border-2 border-black rounded-full hover:bg-black hover:text-white transition-colors">
+                            Masuk untuk Berlangganan
+                        </a>
                         @else
-                            @if(Auth::user()->membership === 'premium')
-                                <button disabled class="w-full py-3 border-2 border-gray-300 text-gray-500 rounded-full cursor-not-allowed">
-                                    Paket Saat Ini
-                                </button>
-                            @elseif(Auth::user()->membership === 'basic')
-                                <form action="{{ route('membership.request') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="type" value="premium">
-                                    <button type="submit" class="w-full py-3 border-2 border-black rounded-full hover:bg-black hover:text-white transition-colors">
-                                        Upgrade ke Premium
-                                    </button>
-                                </form>
-                            @else
-                                <form action="{{ route('membership.request') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="type" value="premium">
-                                    <button type="submit" class="w-full py-3 border-2 border-black rounded-full hover:bg-black hover:text-white transition-colors">
-                                        Pilih Premium
-                                    </button>
-                                </form>
-                            @endif
+                        @if(Auth::user()->membership === 'premium')
+                        <button disabled class="w-full py-3 border-2 border-gray-300 text-gray-500 rounded-full cursor-not-allowed">
+                            Paket Saat Ini
+                        </button>
+                        @elseif(Auth::user()->membership === 'basic')
+                        <form action="{{ route('membership.request') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="type" value="premium">
+                            <button type="submit" class="w-full py-3 border-2 border-black rounded-full hover:bg-black hover:text-white transition-colors">
+                                Upgrade ke Premium
+                            </button>
+                        </form>
+                        @else
+                        <form action="{{ route('membership.request') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="type" value="premium">
+                            <button type="submit" class="w-full py-3 border-2 border-black rounded-full hover:bg-black hover:text-white transition-colors">
+                                Pilih Premium
+                            </button>
+                        </form>
+                        @endif
                         @endguest
                     </div>
                 </div>
@@ -253,13 +253,13 @@
                     Bergabunglah dengan ribuan penulis yang telah menemukan rumah mereka di ByRead.
                 </p>
                 @guest
-                    <a href="{{ route('login') }}" class="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors">
-                        Masuk untuk Mulai
-                    </a>
+                <a href="{{ route('login') }}" class="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors">
+                    Masuk untuk Mulai
+                </a>
                 @else
-                    <a href="{{ route('articles.create') }}" class="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors">
-                        Mulai Menulis
-                    </a>
+                <a href="{{ route('articles.create') }}" class="inline-block bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition-colors">
+                    Mulai Menulis
+                </a>
                 @endguest
             </div>
         </div>
