@@ -13,7 +13,7 @@
                 Total Artikel: {{ $articles->total() }}
             </p>
         </div>
-        <a href="{{ route('articles.create') }}" 
+        <a href="{{ route('admin.articles.create') }}" 
            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
             <i class="fas fa-plus"></i>
             <span>Tambah Artikel Baru</span>
@@ -143,7 +143,7 @@
                                title="Lihat">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ route('articles.edit', $article) }}" 
+                            <a href="{{ route('admin.articles.edit', $article) }}" 
                                class="text-gray-400 hover:text-blue-400 transition-colors"
                                title="Edit">
                                 <i class="fas fa-edit"></i>

@@ -5,66 +5,125 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $query = User::query();
+        $users = User::withCount(['articles', 'comments'])
+            ->when(request('search'), function ($query) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', '%' . request('search') . '%')
+                      ->orWhere('username', 'like', '%' . request('search') . '%')
+                      ->orWhere('email', 'like', '%' . request('search') . '%');
+                });
+            })
+            ->when(request('role'), function ($query) {
+                $query->where('role', request('role'));
+            })
+            ->when(request('sort'), function ($query) {
+                match(request('sort')) {
+                    'newest' => $query->latest(),
+                    'oldest' => $query->oldest(),
+                    'most_articles' => $query->orderByDesc('articles_count'),
+                    'most_comments' => $query->orderByDesc('comments_count'),
+                    default => $query->latest()
+                };
+            }, function ($query) {
+                $query->latest();
+            })
+            ->paginate(10)
+            ->withQueryString();
 
-        // Search filter
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            });
+        return view('admin.users.index', compact('users'));
+    }
+
+    public function create()
+    {
+        return view('admin.users.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', Password::defaults()],
+            'role' => ['required', 'in:user,admin,verified'],
+            'avatar' => ['nullable', 'image', 'max:1024'],
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $avatar = $request->file('avatar')->store('avatars', 'public');
+            $validated['avatar'] = basename($avatar);
         }
 
-        // Role filter
-        if ($request->filled('role')) {
-            $query->where('role', $request->role);
-        }
+        $validated['password'] = Hash::make($validated['password']);
+        $validated['email_verified'] = true;
+        $validated['membership'] = 'free';
+        $validated['online_status'] = false;
+        $validated['last_seen'] = now();
 
-        // Get paginated results
-        $users = $query->latest()->paginate(10);
+        User::create($validated);
 
-        // Append query parameters to pagination links
-        if ($request->filled('search') || $request->filled('role')) {
-            $users->appends($request->only(['search', 'role']));
-        }
+        return redirect()
+            ->route('admin.users')
+            ->with('success', 'User berhasil ditambahkan');
+    }
 
-        return view('admin.users', compact('users'));
+    public function edit(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'role' => ['required', 'string', Rule::in(['user', 'admin', 'verified'])],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'password' => ['nullable', Password::defaults()],
+            'role' => ['required', 'in:user,admin,verified'],
+            'avatar' => ['nullable', 'image', 'max:1024'],
         ]);
 
-        $user->update($request->only(['name', 'username', 'email', 'role']));
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar
+            if ($user->avatar) {
+                Storage::disk('public')->delete('avatars/' . $user->avatar);
+            }
+            
+            $avatar = $request->file('avatar')->store('avatars', 'public');
+            $validated['avatar'] = basename($avatar);
+        }
 
-        return redirect()->route('admin.users')
-            ->with('success', 'User updated successfully.');
+        if ($validated['password']) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()
+            ->route('admin.users')
+            ->with('success', 'User berhasil diupdate');
     }
 
     public function destroy(User $user)
     {
-        // Prevent deleting self
-        if ($user->id === auth()->id()) {
-            return redirect()->route('admin.users')
-                ->with('error', 'You cannot delete your own account.');
+        if ($user->avatar) {
+            Storage::disk('public')->delete('avatars/' . $user->avatar);
         }
 
         $user->delete();
 
-        return redirect()->route('admin.users')
-            ->with('success', 'User deleted successfully.');
+        return redirect()
+            ->route('admin.users')
+            ->with('success', 'User berhasil dihapus');
     }
 } 

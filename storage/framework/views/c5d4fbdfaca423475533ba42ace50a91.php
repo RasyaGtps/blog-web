@@ -11,6 +11,13 @@
     <div>
         <ul class="flex items-center gap-8">
             <li>
+                <a href="<?php echo e(route('about')); ?>" 
+                   class="text-[#242424] hover:text-black text-sm flex items-center gap-1">
+                    <i class="fas fa-info-circle"></i>
+                    About Us
+                </a>
+            </li>
+            <li>
                 <a href="<?php echo e(route('stories.index')); ?>" 
                    class="text-[#242424] hover:text-black text-sm flex items-center gap-1">
                     <i class="fas fa-book-reader"></i>

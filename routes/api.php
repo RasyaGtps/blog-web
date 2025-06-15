@@ -4,45 +4,47 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\StoryController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Api\ArticleController;
+use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\Api\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Api\Admin\ArticleController as AdminArticleController;
+use App\Http\Controllers\Api\Admin\TagController as AdminTagController;
 
-// Auth Routes
+// Public Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Public Routes
-Route::get('/users/{id}', [UserController::class, 'show']);
-Route::get('/users/username/{username}', [UserController::class, 'getUserByUsername']);
-
+// User Routes
 Route::middleware('auth:sanctum')->group(function () {
-    // User Routes
+    // Profile & User
     Route::get('/me', [UserController::class, 'me']);
+    Route::patch('/profile', [UserController::class, 'updateProfile']);
+    Route::post('/profile/avatar', [UserController::class, 'updateAvatar']);
     
-    // Stories Route
-    Route::get('/stories', [StoryController::class, 'index']);
-
-    // Profile Routes
-    Route::patch('/profile', [ProfileController::class, 'update']);
-    Route::patch('/profile/avatar', [ProfileController::class, 'updateAvatar']);
-    Route::delete('/profile', [ProfileController::class, 'destroy']);
+    // Following
+    Route::post('/users/{username}/follow', [UserController::class, 'follow']);
+    Route::delete('/users/{username}/unfollow', [UserController::class, 'unfollow']);
+    Route::get('/users/{username}/followers', [UserController::class, 'followers']);
+    Route::get('/users/{username}/following', [UserController::class, 'following']);
     
-    // Following System
-    Route::post('/users/{username}/follow', [ProfileController::class, 'apiFollow']);
-    Route::delete('/users/{username}/unfollow', [ProfileController::class, 'apiUnfollow']);
-    Route::get('/users/{username}/followers', [ProfileController::class, 'apiFollowers']);
-    Route::get('/users/{username}/following', [ProfileController::class, 'apiFollowing']);
-    
-    // Article Routes
-    Route::post('/articles', [ArticleController::class, 'store']);
-    Route::put('/articles/{article}', [ArticleController::class, 'update']);
-    Route::delete('/articles/{article}', [ArticleController::class, 'destroy']);
+    // Articles
+    Route::get('/articles', [ArticleController::class, 'index']);
+    Route::get('/articles/{id}', [ArticleController::class, 'show']);
+    Route::post('/articles/{article}/comments', [ArticleController::class, 'addComment']);
 
-    // Comment Routes
-    Route::post('/articles/{article}/comments', [CommentController::class, 'store']);
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Auth Routes
-    Route::post('/logout', [AuthController::class, 'logout']); 
+    // Admin Routes
+    Route::middleware('admin')->group(function () {
+        // Users Management
+        Route::get('/admin/users', [AdminUserController::class, 'index']);
+        
+        // Articles Management
+        Route::get('/admin/articles', [AdminArticleController::class, 'index']);
+        Route::get('/admin/articles/filter', [AdminArticleController::class, 'filter']);
+
+        // Tags Management
+        Route::get('/admin/tags', [AdminTagController::class, 'index']);
+    });
 });

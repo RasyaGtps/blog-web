@@ -33,6 +33,9 @@ class User extends Authenticatable
         'is_verified',
         'online_status',
         'last_seen',
+        'email_verified',
+        'otp_code',
+        'otp_expires_at',
     ];
 
     /**
@@ -53,11 +56,12 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
+            'email_verified' => 'boolean',
             'password' => 'hashed',
             'membership_expires_at' => 'datetime',
             'online_status' => 'integer',
             'last_seen' => 'datetime',
+            'otp_expires_at' => 'datetime',
         ];
     }
 
@@ -93,7 +97,8 @@ class User extends Authenticatable
      */
     public function following()
     {
-        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id')
+            ->withTimestamps();
     }
 
     /**
@@ -101,7 +106,8 @@ class User extends Authenticatable
      */
     public function followers()
     {
-        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id')
+            ->withTimestamps();
     }
 
     /**

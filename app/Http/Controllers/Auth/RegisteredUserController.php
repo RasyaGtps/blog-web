@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpVerification;
 
 class RegisteredUserController extends Controller
 {
@@ -36,14 +38,25 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        // Generate OTP
+        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'otp_code' => $otp,
+            'otp_expires_at' => now()->addMinutes(5),
+            'email_verified' => false,
         ]);
 
-        return redirect()->route('login')
-            ->with('success', 'Registration successful! Please login to continue.');
+        // Send OTP email
+        Mail::to($user->email)->send(new OtpVerification($otp));
+
+        Auth::login($user);
+
+        return redirect()->route('verify.otp.show')
+            ->with('success', 'Registrasi berhasil! Silakan verifikasi email Anda.');
     }
 }

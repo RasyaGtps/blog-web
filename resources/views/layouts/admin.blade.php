@@ -1,10 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - ByRead</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Laravel') }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        [x-cloak] { 
+            display: none !important; 
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        * {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+
+    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased">
@@ -42,6 +65,15 @@
                    class="flex items-center px-6 py-3 text-gray-300 hover:bg-[#2f2f2f] {{ request()->routeIs('admin.articles') ? 'bg-[#2f2f2f] text-white' : '' }}">
                     <i class="fas fa-newspaper w-5"></i>
                     <span class="ml-3">Articles</span>
+                </a>
+
+                <div class="px-4 mt-6 mb-4">
+                    <p class="text-xs uppercase text-gray-400 tracking-wider">CONTENT</p>
+                </div>
+                <a href="{{ route('admin.tags') }}" 
+                   class="flex items-center px-6 py-3 text-gray-300 hover:bg-[#2f2f2f] {{ request()->routeIs('admin.tags') ? 'bg-[#2f2f2f] text-white' : '' }}">
+                    <i class="fas fa-tags w-5"></i>
+                    <span class="ml-3">Tags</span>
                 </a>
 
                 <div class="px-4 mt-6 mb-4">

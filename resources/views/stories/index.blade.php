@@ -48,24 +48,23 @@
     <div class="max-w-[1200px] mx-auto px-4 py-8">
         <!-- Categories/Tags -->
         <div class="flex items-center gap-6 border-b border-gray-200 pb-4 mb-8 overflow-x-auto">
-            <a href="#" class="text-sm font-medium whitespace-nowrap {{ request()->is('stories') ? 'text-black' : 'text-gray-500 hover:text-black' }}">
+            <a href="{{ route('stories.index') }}" class="text-sm font-medium whitespace-nowrap {{ !request('tag') && !request('filter') ? 'text-black' : 'text-gray-500 hover:text-black' }}">
                 Untuk Anda
             </a>
-            <a href="#" class="text-sm font-medium whitespace-nowrap text-gray-500 hover:text-black">
-                Diikuti
-            </a>
-            <a href="#" class="text-sm font-medium whitespace-nowrap text-gray-500 hover:text-black">
-                Teknologi
-            </a>
-            <a href="#" class="text-sm font-medium whitespace-nowrap text-gray-500 hover:text-black">
-                Data Sains
-            </a>
-            <a href="#" class="text-sm font-medium whitespace-nowrap text-gray-500 hover:text-black">
-                Pemrograman
-            </a>
-            <a href="#" class="text-sm font-medium whitespace-nowrap text-gray-500 hover:text-black">
-                Menulis
-            </a>
+            @auth
+                <a href="{{ route('stories.index', ['filter' => 'following']) }}" 
+                   class="text-sm font-medium whitespace-nowrap {{ request('filter') === 'following' ? 'text-black' : 'text-gray-500 hover:text-black' }}">
+                    Diikuti
+                </a>
+            @endauth
+            @if(isset($tags) && $tags->count() > 0)
+                @foreach($tags as $tag)
+                    <a href="{{ route('stories.index', ['tag' => $tag->name]) }}" 
+                       class="text-sm font-medium whitespace-nowrap {{ request('tag') === $tag->name ? 'text-black' : 'text-gray-500 hover:text-black' }}">
+                        {{ $tag->name }}
+                    </a>
+                @endforeach
+            @endif
         </div>
 
         <!-- Articles List -->
@@ -90,6 +89,11 @@
                             <i class="fas fa-check-circle"></i>
                         </span>
                         @endif
+                        @if($article->user->role === 'admin')
+                        <span class="text-sm text-purple-600" title="Developer">
+                            <i class="fas fa-code"></i>
+                        </span>
+                        @endif
                         <span class="text-gray-500 text-sm">· {{ $article->created_at->format('M d') }}</span>
                     </div>
 
@@ -99,15 +103,25 @@
                                 <a href="{{ route('articles.show', $article) }}"
                                     class="text-black hover:text-gray-700">
                                     {{ $article->title }}
+                                    @if($article->type === 'premium')
+                                        <span class="inline-flex items-center justify-center ml-2 px-1.5 py-0.5 bg-yellow-100 rounded text-yellow-600 text-sm" title="Premium Article">
+                                            <i class="fas fa-crown"></i>
+                                        </span>
+                                    @endif
                                 </a>
                             </h2>
                             <p class="text-gray-600 mb-3 line-clamp-2 text-base">
                                 {{ $article->description }}
                             </p>
                             <div class="flex items-center gap-4 text-sm">
-                                <span class="bg-gray-100 px-3 py-1 rounded-full text-gray-600">
-                                    {{ $article->category ?? 'General' }}
-                                </span>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($article->tags as $tag)
+                                        <a href="{{ route('stories.index', ['tag' => $tag->name]) }}" 
+                                           class="bg-gray-100 px-3 py-1 rounded-full text-gray-600 text-sm hover:bg-gray-200 transition-colors">
+                                            #{{ $tag->name }}
+                                        </a>
+                                    @endforeach
+                                </div>
                                 <span class="text-gray-500">{{ $article->read_time ?? '5' }} min read</span>
                                 <span class="flex items-center gap-1 text-gray-500">
                                     <i class="far fa-eye"></i>
@@ -128,15 +142,25 @@
                 </article>
                 @empty
                 <div class="text-center py-12">
-                    <i class="fas fa-newspaper text-4xl text-gray-400 mb-4"></i>
-                    <p class="text-gray-600">Belum ada artikel yang dipublikasikan.</p>
+                    @if(request('filter') === 'following')
+                        <i class="fas fa-users text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600">Belum ada artikel dari penulis yang Anda ikuti.</p>
+                        @guest
+                            <p class="text-gray-500 mt-2">
+                                <a href="{{ route('login') }}" class="text-blue-600 hover:underline">Login</a> untuk mulai mengikuti penulis.
+                            </p>
+                        @endguest
+                    @else
+                        <i class="fas fa-newspaper text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600">Belum ada artikel yang dipublikasikan.</p>
+                    @endif
                 </div>
                 @endforelse
 
                 <!-- Pagination -->
                 @if($articles->hasPages())
                 <div class="mt-8">
-                    {{ $articles->links() }}
+                    {{ $articles->appends(request()->query())->links() }}
                 </div>
                 @endif
             </div>
@@ -150,7 +174,14 @@
                             @foreach($randomArticles as $article)
                             <div>
                                 <a href="{{ route('articles.show', $article) }}" class="block">
-                                    <h4 class="text-sm font-medium hover:text-gray-600 line-clamp-2 mb-2">{{ $article->title }}</h4>
+                                    <h4 class="text-sm font-medium hover:text-gray-600 line-clamp-2 mb-2">
+                                        {{ $article->title }}
+                                        @if($article->type === 'premium')
+                                            <span class="inline-flex items-center justify-center ml-1 px-1 py-0.5 bg-yellow-100 rounded text-yellow-600" title="Premium Article">
+                                                <i class="fas fa-crown text-[10px]"></i>
+                                            </span>
+                                        @endif
+                                    </h4>
                                 </a>
                                 <div class="flex items-center gap-2">
                                     @if($article->user->avatar)
@@ -167,8 +198,13 @@
                                         {{ $article->user->username }}
                                     </a>
                                     @if($article->user->role === 'verified')
-                                        <span class="text-blue-600">
+                                        <span class="text-blue-600" title="Verified">
                                             <i class="fas fa-check-circle text-xs"></i>
+                                        </span>
+                                    @endif
+                                    @if($article->user->role === 'admin')
+                                        <span class="text-purple-600" title="Developer">
+                                            <i class="fas fa-code text-xs"></i>
                                         </span>
                                     @endif
                                 </div>
@@ -182,9 +218,10 @@
                         <div class="flex flex-wrap gap-2">
                             @if(isset($tags) && $tags->count() > 0)
                             @foreach($tags as $tag)
-                            <a href="#" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-200 hover:bg-gray-300 transition-colors">
-                                <span class="text-gray-600">#</span>
-                                <span class="text-gray-800">{{ $tag->name }}</span>
+                            <a href="{{ route('stories.index', ['tag' => $tag->name]) }}" 
+                               class="inline-flex items-center px-3 py-1 rounded-full text-sm {{ request('tag') === $tag->name ? 'bg-gray-800 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-800' }} transition-colors">
+                                <span class="{{ request('tag') === $tag->name ? 'text-gray-300' : 'text-gray-600' }}">#</span>
+                                <span>{{ $tag->name }}</span>
                             </a>
                             @endforeach
                             @else
