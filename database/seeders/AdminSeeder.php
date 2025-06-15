@@ -22,7 +22,7 @@ class AdminSeeder extends Seeder
             'role' => 'admin',
             'membership' => 'premium',
             'membership_expires_at' => now()->addYears(10),
-            'bio' => 'System Administrator',
+            'bio' => 'Rasya',
             'online_status' => true,
             'last_seen' => now(),
         ]);

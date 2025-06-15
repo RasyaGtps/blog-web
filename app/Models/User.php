@@ -186,4 +186,31 @@ class User extends Authenticatable
     {
         return $this->hasMany(MembershipRequest::class);
     }
+
+    /**
+     * Get messages sent by the user
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'from_user_id');
+    }
+
+    /**
+     * Get messages received by the user
+     */
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'to_user_id');
+    }
+
+    /**
+     * Get all messages for the user (sent and received)
+     */
+    public function messages()
+    {
+        return Message::where(function($query) {
+            $query->where('from_user_id', $this->id)
+                  ->orWhere('to_user_id', $this->id);
+        });
+    }
 }

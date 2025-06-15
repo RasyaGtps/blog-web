@@ -110,7 +110,7 @@
 
     <!-- Comments Section -->
     <div class="mt-12">
-        <h2 class="text-xl font-bold mb-8">Responses ({{ $article->comments->count() }})</h2>
+        <h2 class="text-xl font-bold mb-8">Komentar ({{ $article->comments->count() }})</h2>
 
         <!-- Comment Form -->
         @auth
@@ -141,12 +141,12 @@
                         <textarea name="content" 
                                   class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
                                   rows="1"
-                                  placeholder="What are your thoughts?"
+                                  placeholder="Tulis komentar..."
                                   required></textarea>
                         <div class="flex justify-end mt-2">
                             <button type="submit" 
                                     class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
-                                Respond
+                                Kirim
                             </button>
                         </div>
                     </form>
@@ -247,7 +247,7 @@
                                         <textarea name="content" 
                                                   class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
                                                   rows="1"
-                                                  placeholder="What are your thoughts?"
+                                                  placeholder="Tulis komentar..."
                                                   required></textarea>
                                         <div class="flex justify-end gap-2 mt-2">
                                             <button type="button" 
@@ -257,7 +257,7 @@
                                             </button>
                                             <button type="submit" 
                                                     class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
-                                                Respond
+                                                Kirim
                                             </button>
                                         </div>
                                     </form>
@@ -269,7 +269,7 @@
                         @if($comment->replies->count() > 0)
                             <div class="mt-4 space-y-4">
                                 @foreach($comment->replies as $reply)
-                                    <div class="flex gap-3 pl-8">
+                                    <div class="flex gap-3 pl-8" x-data="{ showReplyForm: false }">
                                         <a href="{{ route('profile.show', $reply->user->username) }}" class="flex-shrink-0">
                                             @if($reply->user->avatar)
                                                 <img src="{{ asset('avatars/' . $reply->user->avatar) }}" 
@@ -301,17 +301,150 @@
                                                 <span class="text-gray-500 text-sm">{{ $reply->created_at->diffForHumans() }}</span>
                                             </div>
                                             <div class="text-gray-800 mb-2">{{ $reply->content }}</div>
-                                            @can('delete', $reply)
-                                                <form action="{{ route('comments.destroy', $reply) }}" 
-                                                      method="POST" 
-                                                      class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="text-sm text-gray-500 hover:text-red-500">
-                                                        Delete
+                                            
+                                            <!-- Reply Actions -->
+                                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                                @auth
+                                                    <button @click="showReplyForm = !showReplyForm" class="hover:text-gray-700">
+                                                        Reply
                                                     </button>
-                                                </form>
-                                            @endcan
+                                                @endauth
+                                                @can('delete', $reply)
+                                                    <form action="{{ route('comments.destroy', $reply) }}" 
+                                                          method="POST" 
+                                                          class="inline"
+                                                          onsubmit="return confirm('Delete this comment?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="hover:text-red-500">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                @endcan
+                                            </div>
+
+                                            <!-- Show Nested Replies -->
+                                            @if($reply->replies->count() > 0)
+                                                <div class="mt-4 space-y-4">
+                                                    @foreach($reply->replies as $nestedReply)
+                                                        <div class="flex gap-3 pl-8" x-data="{ showReplyForm: false }">
+                                                            <a href="{{ route('profile.show', $nestedReply->user->username) }}" class="flex-shrink-0">
+                                                                @if($nestedReply->user->avatar)
+                                                                    <img src="{{ asset('avatars/' . $nestedReply->user->avatar) }}" 
+                                                                         alt="{{ $nestedReply->user->username }}" 
+                                                                         class="w-8 h-8 rounded-full object-cover">
+                                                                @else
+                                                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($nestedReply->user->username) }}" 
+                                                                         alt="{{ $nestedReply->user->username }}" 
+                                                                         class="w-8 h-8 rounded-full">
+                                                                @endif
+                                                            </a>
+                                                            <div class="flex-1">
+                                                                <div class="flex items-center gap-2 mb-1">
+                                                                    <a href="{{ route('profile.show', $nestedReply->user->username) }}" class="font-medium hover:text-blue-600">
+                                                                        {{ $nestedReply->user->username }}
+                                                                    </a>
+                                                                    @if($nestedReply->user->id === $article->user_id)
+                                                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                                            <i class="fas fa-pen text-xs"></i>
+                                                                            Author
+                                                                        </span>
+                                                                    @endif
+                                                                    @if($nestedReply->user->role === 'verified')
+                                                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                                            <i class="fas fa-check-circle text-xs"></i>
+                                                                            Verified
+                                                                        </span>
+                                                                    @endif
+                                                                    <span class="text-gray-500 text-sm">{{ $nestedReply->created_at->diffForHumans() }}</span>
+                                                                </div>
+                                                                <div class="text-gray-800 mb-2">{{ $nestedReply->content }}</div>
+                                                                
+                                                                <!-- Nested Reply Actions -->
+                                                                <div class="flex items-center gap-4 text-sm text-gray-500">
+                                                                    @auth
+                                                                        <button @click="showReplyForm = !showReplyForm" class="hover:text-gray-700">
+                                                                            Reply
+                                                                        </button>
+                                                                    @endauth
+                                                                    @can('delete', $nestedReply)
+                                                                        <form action="{{ route('comments.destroy', $nestedReply) }}" 
+                                                                              method="POST" 
+                                                                              class="inline"
+                                                                              onsubmit="return confirm('Delete this comment?');">
+                                                                            @csrf
+                                                                            @method('DELETE')
+                                                                            <button type="submit" class="hover:text-red-500">
+                                                                                Delete
+                                                                            </button>
+                                                                        </form>
+                                                                    @endcan
+                                                                </div>
+
+                                                                <!-- Nested Reply Form -->
+                                                                @auth
+                                                                    <div x-show="showReplyForm" x-cloak class="mt-4">
+                                                                        <div class="flex items-center gap-2 mb-2">
+                                                                            <a href="{{ route('profile.show', auth()->user()->username) }}" class="flex items-center gap-2">
+                                                                                @if(auth()->user()->avatar)
+                                                                                    <img src="{{ asset('avatars/' . auth()->user()->avatar) }}" 
+                                                                                         alt="{{ auth()->user()->username }}" 
+                                                                                         class="w-6 h-6 rounded-full object-cover">
+                                                                                @else
+                                                                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->username) }}" 
+                                                                                         alt="{{ auth()->user()->username }}" 
+                                                                                         class="w-6 h-6 rounded-full">
+                                                                                @endif
+                                                                                <span class="font-medium hover:text-blue-600">{{ auth()->user()->username }}</span>
+                                                                            </a>
+                                                                            @if(auth()->user()->role === 'verified')
+                                                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                                                    <i class="fas fa-check-circle text-xs"></i>
+                                                                                    Verified
+                                                                                </span>
+                                                                            @endif
+                                                                        </div>
+                                                                        <div class="pl-8">
+                                                                            <form action="{{ route('comments.store', $article) }}" method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="parent_id" value="{{ $nestedReply->id }}">
+                                                                                <textarea name="content" 
+                                                                                          class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
+                                                                                          rows="1"
+                                                                                          placeholder="Tulis balasan..."
+                                                                                          required></textarea>
+                                                                                <div class="flex justify-end gap-2 mt-2">
+                                                                                    <button type="button" 
+                                                                                            @click="showReplyForm = false"
+                                                                                            class="text-gray-500 hover:text-gray-700 text-sm">
+                                                                                        Batal
+                                                                                    </button>
+                                                                                    <button type="submit" 
+                                                                                            class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
+                                                                                        Kirim
+                                                                                    </button>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                @endauth
+
+                                                                @can('delete', $nestedReply)
+                                                                    <form action="{{ route('comments.destroy', $nestedReply) }}" 
+                                                                          method="POST" 
+                                                                          class="inline">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="text-sm text-gray-500 hover:text-red-500">
+                                                                            Delete
+                                                                        </button>
+                                                                    </form>
+                                                                @endcan
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach

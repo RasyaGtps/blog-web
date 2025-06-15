@@ -110,7 +110,7 @@
 
     <!-- Comments Section -->
     <div class="mt-12">
-        <h2 class="text-xl font-bold mb-8">Responses (<?php echo e($article->comments->count()); ?>)</h2>
+        <h2 class="text-xl font-bold mb-8">Komentar (<?php echo e($article->comments->count()); ?>)</h2>
 
         <!-- Comment Form -->
         <?php if(auth()->guard()->check()): ?>
@@ -141,12 +141,12 @@
                         <textarea name="content" 
                                   class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
                                   rows="1"
-                                  placeholder="What are your thoughts?"
+                                  placeholder="Tulis komentar..."
                                   required></textarea>
                         <div class="flex justify-end mt-2">
                             <button type="submit" 
                                     class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
-                                Respond
+                                Kirim
                             </button>
                         </div>
                     </form>
@@ -248,7 +248,7 @@
                                         <textarea name="content" 
                                                   class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
                                                   rows="1"
-                                                  placeholder="What are your thoughts?"
+                                                  placeholder="Tulis komentar..."
                                                   required></textarea>
                                         <div class="flex justify-end gap-2 mt-2">
                                             <button type="button" 
@@ -258,7 +258,7 @@
                                             </button>
                                             <button type="submit" 
                                                     class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
-                                                Respond
+                                                Kirim
                                             </button>
                                         </div>
                                     </form>
@@ -270,7 +270,7 @@
                         <?php if($comment->replies->count() > 0): ?>
                             <div class="mt-4 space-y-4">
                                 <?php $__currentLoopData = $comment->replies; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $reply): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <div class="flex gap-3 pl-8">
+                                    <div class="flex gap-3 pl-8" x-data="{ showReplyForm: false }">
                                         <a href="<?php echo e(route('profile.show', $reply->user->username)); ?>" class="flex-shrink-0">
                                             <?php if($reply->user->avatar): ?>
                                                 <img src="<?php echo e(asset('avatars/' . $reply->user->avatar)); ?>" 
@@ -303,16 +303,150 @@
                                                 <span class="text-gray-500 text-sm"><?php echo e($reply->created_at->diffForHumans()); ?></span>
                                             </div>
                                             <div class="text-gray-800 mb-2"><?php echo e($reply->content); ?></div>
-                                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete', $reply)): ?>
-                                                <form action="<?php echo e(route('comments.destroy', $reply)); ?>" 
-                                                      method="POST" 
-                                                      class="inline">
-                                                    <?php echo csrf_field(); ?>
-                                                    <?php echo method_field('DELETE'); ?>
-                                                    <button type="submit" class="text-sm text-gray-500 hover:text-red-500">
-                                                        Delete
+                                            
+                                            <!-- Reply Actions -->
+                                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                                <?php if(auth()->guard()->check()): ?>
+                                                    <button @click="showReplyForm = !showReplyForm" class="hover:text-gray-700">
+                                                        Reply
                                                     </button>
-                                                </form>
+                                                <?php endif; ?>
+                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete', $reply)): ?>
+                                                    <form action="<?php echo e(route('comments.destroy', $reply)); ?>" 
+                                                          method="POST" 
+                                                          class="inline"
+                                                          onsubmit="return confirm('Delete this comment?');">
+                                                        <?php echo csrf_field(); ?>
+                                                        <?php echo method_field('DELETE'); ?>
+                                                        <button type="submit" class="hover:text-red-500">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+                                            </div>
+
+                                            <!-- Show Nested Replies -->
+                                            <?php if($reply->replies->count() > 0): ?>
+                                                <div class="mt-4 space-y-4">
+                                                    <?php $__currentLoopData = $reply->replies; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $nestedReply): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <div class="flex gap-3 pl-8" x-data="{ showReplyForm: false }">
+                                                            <a href="<?php echo e(route('profile.show', $nestedReply->user->username)); ?>" class="flex-shrink-0">
+                                                                <?php if($nestedReply->user->avatar): ?>
+                                                                    <img src="<?php echo e(asset('avatars/' . $nestedReply->user->avatar)); ?>" 
+                                                                         alt="<?php echo e($nestedReply->user->username); ?>" 
+                                                                         class="w-8 h-8 rounded-full object-cover">
+                                                                <?php else: ?>
+                                                                    <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode($nestedReply->user->username)); ?>" 
+                                                                         alt="<?php echo e($nestedReply->user->username); ?>" 
+                                                                         class="w-8 h-8 rounded-full">
+                                                                <?php endif; ?>
+                                                            </a>
+                                                            <div class="flex-1">
+                                                                <div class="flex items-center gap-2 mb-1">
+                                                                    <a href="<?php echo e(route('profile.show', $nestedReply->user->username)); ?>" class="font-medium hover:text-blue-600">
+                                                                        <?php echo e($nestedReply->user->username); ?>
+
+                                                                    </a>
+                                                                    <?php if($nestedReply->user->id === $article->user_id): ?>
+                                                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                                            <i class="fas fa-pen text-xs"></i>
+                                                                            Author
+                                                                        </span>
+                                                                    <?php endif; ?>
+                                                                    <?php if($nestedReply->user->role === 'verified'): ?>
+                                                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                                            <i class="fas fa-check-circle text-xs"></i>
+                                                                            Verified
+                                                                        </span>
+                                                                    <?php endif; ?>
+                                                                    <span class="text-gray-500 text-sm"><?php echo e($nestedReply->created_at->diffForHumans()); ?></span>
+                                                                </div>
+                                                                <div class="text-gray-800 mb-2"><?php echo e($nestedReply->content); ?></div>
+                                                                
+                                                                <!-- Nested Reply Actions -->
+                                                                <div class="flex items-center gap-4 text-sm text-gray-500">
+                                                                    <?php if(auth()->guard()->check()): ?>
+                                                                        <button @click="showReplyForm = !showReplyForm" class="hover:text-gray-700">
+                                                                            Reply
+                                                                        </button>
+                                                                    <?php endif; ?>
+                                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete', $nestedReply)): ?>
+                                                                        <form action="<?php echo e(route('comments.destroy', $nestedReply)); ?>" 
+                                                                              method="POST" 
+                                                                              class="inline"
+                                                                              onsubmit="return confirm('Delete this comment?');">
+                                                                            <?php echo csrf_field(); ?>
+                                                                            <?php echo method_field('DELETE'); ?>
+                                                                            <button type="submit" class="hover:text-red-500">
+                                                                                Delete
+                                                                            </button>
+                                                                        </form>
+                                                                    <?php endif; ?>
+                                                                </div>
+
+                                                                <!-- Nested Reply Form -->
+                                                                <?php if(auth()->guard()->check()): ?>
+                                                                    <div x-show="showReplyForm" x-cloak class="mt-4">
+                                                                        <div class="flex items-center gap-2 mb-2">
+                                                                            <a href="<?php echo e(route('profile.show', auth()->user()->username)); ?>" class="flex items-center gap-2">
+                                                                                <?php if(auth()->user()->avatar): ?>
+                                                                                    <img src="<?php echo e(asset('avatars/' . auth()->user()->avatar)); ?>" 
+                                                                                         alt="<?php echo e(auth()->user()->username); ?>" 
+                                                                                         class="w-6 h-6 rounded-full object-cover">
+                                                                                <?php else: ?>
+                                                                                    <img src="https://ui-avatars.com/api/?name=<?php echo e(urlencode(auth()->user()->username)); ?>" 
+                                                                                         alt="<?php echo e(auth()->user()->username); ?>" 
+                                                                                         class="w-6 h-6 rounded-full">
+                                                                                <?php endif; ?>
+                                                                                <span class="font-medium hover:text-blue-600"><?php echo e(auth()->user()->username); ?></span>
+                                                                            </a>
+                                                                            <?php if(auth()->user()->role === 'verified'): ?>
+                                                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                                                    <i class="fas fa-check-circle text-xs"></i>
+                                                                                    Verified
+                                                                                </span>
+                                                                            <?php endif; ?>
+                                                                        </div>
+                                                                        <div class="pl-8">
+                                                                            <form action="<?php echo e(route('comments.store', $article)); ?>" method="POST">
+                                                                                <?php echo csrf_field(); ?>
+                                                                                <input type="hidden" name="parent_id" value="<?php echo e($nestedReply->id); ?>">
+                                                                                <textarea name="content" 
+                                                                                          class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
+                                                                                          rows="1"
+                                                                                          placeholder="Tulis balasan..."
+                                                                                          required></textarea>
+                                                                                <div class="flex justify-end gap-2 mt-2">
+                                                                                    <button type="button" 
+                                                                                            @click="showReplyForm = false"
+                                                                                            class="text-gray-500 hover:text-gray-700 text-sm">
+                                                                                        Batal
+                                                                                    </button>
+                                                                                    <button type="submit" 
+                                                                                            class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
+                                                                                        Kirim
+                                                                                    </button>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                <?php endif; ?>
+
+                                                                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete', $nestedReply)): ?>
+                                                                    <form action="<?php echo e(route('comments.destroy', $nestedReply)); ?>" 
+                                                                          method="POST" 
+                                                                          class="inline">
+                                                                        <?php echo csrf_field(); ?>
+                                                                        <?php echo method_field('DELETE'); ?>
+                                                                        <button type="submit" class="text-sm text-gray-500 hover:text-red-500">
+                                                                            Delete
+                                                                        </button>
+                                                                    </form>
+                                                                <?php endif; ?>
+                                                            </div>
+                                                        </div>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </div>
                                             <?php endif; ?>
                                         </div>
                                     </div>

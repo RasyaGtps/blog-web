@@ -73,6 +73,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/membership/request/{membershipRequest}', [MembershipController::class, 'cancel'])->name('membership.cancel');
 
     // Chat Routes
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/chat/{user}', [ChatController::class, 'show'])->name('chat.show');
 });
 

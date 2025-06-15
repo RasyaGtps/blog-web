@@ -41,6 +41,13 @@
                     </a>
                 </li>
                 <li>
+                    <a href="<?php echo e(route('chat.index')); ?>" 
+                       class="text-[#242424] hover:text-black text-sm flex items-center gap-1">
+                        <i class="fas fa-inbox"></i>
+                        Pesan
+                    </a>
+                </li>
+                <li>
                     <a href="<?php echo e(route('dashboard')); ?>" 
                        class="text-[#242424] hover:text-black text-sm flex items-center gap-1">
                         <i class="fas fa-columns"></i>
