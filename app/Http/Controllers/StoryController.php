@@ -8,11 +8,24 @@ use Illuminate\Http\Request;
 
 class StoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $articles = Article::with(['user', 'comments'])
-            ->latest()
-            ->paginate(12);
+        $query = Article::with(['user', 'comments', 'tags']);
+
+        // Filter by followed authors
+        if ($request->has('filter') && $request->filter === 'following' && auth()->check()) {
+            $followedUsers = auth()->user()->following()->pluck('users.id');
+            $query->whereIn('user_id', $followedUsers);
+        }
+        // Filter by tag if provided
+        elseif ($request->has('tag')) {
+            $tagName = $request->tag;
+            $query->whereHas('tags', function($q) use ($tagName) {
+                $q->where('name', $tagName);
+            });
+        }
+
+        $articles = $query->latest()->paginate(12);
 
         $tags = Tag::withCount('articles')
             ->orderBy('articles_count', 'desc')

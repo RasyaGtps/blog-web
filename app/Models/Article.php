@@ -16,13 +16,10 @@ class Article extends Model
      */
     protected $fillable = [
         'title',
-        'slug',
         'description',
         'content',
-        'cover_image',
         'user_id',
         'views',
-        'read_time',
         'type'
     ];
 

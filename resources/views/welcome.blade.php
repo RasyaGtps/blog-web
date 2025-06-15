@@ -13,7 +13,7 @@
     <div class="bg-white w-full border-b text-sm">
         @include('layouts.navigation')
     </div>
-    
+
     <!-- Hero Section -->
     <section class="hero min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-[#f8f6f2]">
         <div class="max-w-6xl mx-auto px-4">
@@ -39,15 +39,15 @@
                     @foreach($featuredArticles as $article)
                         <article class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                             @if($article->cover_image)
-                                <img src="{{ $article->cover_image }}" 
-                                     alt="{{ $article->title }}" 
+                                <img src="{{ $article->cover_image }}"
+                                     alt="{{ $article->title }}"
                                      class="w-full h-48 object-cover rounded-t-xl">
                             @endif
                             <div class="p-6">
                                 <div class="flex items-center gap-3 mb-4">
                                     @if($article->user->avatar)
-                                        <img src="/avatars/{{ $article->user->avatar }}" 
-                                             alt="{{ $article->user->username }}" 
+                                        <img src="/avatars/{{ $article->user->avatar }}"
+                                             alt="{{ $article->user->username }}"
                                              class="w-8 h-8 rounded-full object-cover">
                                     @else
                                         <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-600 uppercase">
@@ -87,13 +87,13 @@
                     @foreach(['Technology', 'Health', 'Business', 'Travel', 'Food', 'Lifestyle', 'Science', 'Culture'] as $category)
                         <a href="#" class="group">
                             <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center">
-                                <i class="fas fa-{{ $category === 'Technology' ? 'laptop-code' : 
-                                                  ($category === 'Health' ? 'heartbeat' : 
-                                                  ($category === 'Business' ? 'chart-line' : 
-                                                  ($category === 'Travel' ? 'plane' : 
-                                                  ($category === 'Food' ? 'utensils' : 
-                                                  ($category === 'Lifestyle' ? 'spa' : 
-                                                  ($category === 'Science' ? 'flask' : 'palette')))))) }} 
+                                <i class="fas fa-{{ $category === 'Technology' ? 'laptop-code' :
+                                                  ($category === 'Health' ? 'heartbeat' :
+                                                  ($category === 'Business' ? 'chart-line' :
+                                                  ($category === 'Travel' ? 'plane' :
+                                                  ($category === 'Food' ? 'utensils' :
+                                                  ($category === 'Lifestyle' ? 'spa' :
+                                                  ($category === 'Science' ? 'flask' : 'palette')))))) }}
                                    text-2xl mb-3 text-gray-600 group-hover:text-blue-600 transition-colors"></i>
                                 <h3 class="font-medium group-hover:text-blue-600 transition-colors">{{ $category }}</h3>
                             </div>
@@ -141,7 +141,7 @@
                     Bergabunglah dengan ribuan penulis yang telah membagikan ide dan pengalaman mereka di ByRead.
                 </p>
                 @guest
-                    <a href="{{ route('register') }}" 
+                    <a href="{{ route('register') }}"
                        class="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-3 rounded-full text-lg hover:bg-blue-50 transition-colors"
                        data-aos="fade-up" data-aos-delay="200">
                         <i class="fas fa-user-plus"></i>
@@ -194,7 +194,7 @@
         const registerForm = document.getElementById('registerForm');
         registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+
             document.querySelectorAll('.error-message').forEach(el => {
                 el.textContent = '';
                 el.style.display = 'none';

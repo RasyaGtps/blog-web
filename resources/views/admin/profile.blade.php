@@ -24,15 +24,9 @@
                     <div class="space-y-2">
                         <h1 class="text-3xl font-bold text-white flex items-center gap-3">
                             {{ $user->name }}
-                            @if($user->role === 'admin')
                             <span class="text-purple-400 text-xl">
                                 <i class="fas fa-crown" title="Admin"></i>
                             </span>
-                            @elseif($user->role === 'verified')
-                            <span class="text-blue-400 text-xl">
-                                <i class="fas fa-check-circle" title="Verified"></i>
-                            </span>
-                            @endif
                         </h1>
                         <div class="flex items-center gap-2 text-gray-400">
                             <i class="fas fa-at text-sm"></i>
@@ -48,7 +42,7 @@
                     <div class="flex items-center gap-2">
                         <span class="px-4 py-2 rounded-full bg-[#2f2f2f] text-purple-400 text-sm font-medium flex items-center gap-2">
                             <i class="fas fa-shield-alt"></i>
-                            {{ ucfirst($user->role) }}
+                            Administrator
                         </span>
                         @if($user->membership === 'free')
                         <span class="px-4 py-2 rounded-full bg-[#2f2f2f] text-gray-400 text-sm font-medium flex items-center gap-2">
@@ -163,7 +157,7 @@
             </div>
             <h3 class="text-xl font-medium text-white mb-2">No Articles Yet</h3>
             <p class="text-gray-400 mb-6">Start writing and sharing your thoughts with the world!</p>
-            <a href="{{ route('articles.create') }}"
+            <a href="{{ route('admin.articles.create') }}"
                 class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
                 <i class="fas fa-plus"></i>
                 <span>Create Your First Article</span>

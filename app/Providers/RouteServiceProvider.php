@@ -36,5 +36,10 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
         });
+
+        Route::middleware('verified')->group(function () {
+            Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+            Route::get('/articles/create', 'ArticleController@create')->name('articles.create');
+        });
     }
 }
