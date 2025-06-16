@@ -54,6 +54,13 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', Password::defaults()],
             'role' => ['required', 'in:user,admin,verified'],
+            'membership' => ['required', 'in:free,basic,premium'],
+            'membership_expires_at' => [
+                'nullable',
+                'date',
+                'required_if:membership,basic,premium',
+                'after:today'
+            ],
             'avatar' => ['nullable', 'image', 'max:1024'],
         ]);
 
@@ -64,9 +71,15 @@ class UserController extends Controller
 
         $validated['password'] = Hash::make($validated['password']);
         $validated['email_verified'] = true;
-        $validated['membership'] = 'free';
         $validated['online_status'] = false;
         $validated['last_seen'] = now();
+
+        // Set membership expiration
+        if ($validated['membership'] === 'free') {
+            $validated['membership_expires_at'] = null;
+        } elseif (!isset($validated['membership_expires_at'])) {
+            $validated['membership_expires_at'] = now()->addMonth();
+        }
 
         User::create($validated);
 
@@ -86,32 +99,34 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'password' => ['nullable', Password::defaults()],
             'role' => ['required', 'in:user,admin,verified'],
+            'membership' => ['required', 'in:free,basic,premium'],
+            'membership_expires_at' => [
+                'nullable',
+                'date',
+                'required_if:membership,basic,premium',
+                'after:today'
+            ],
             'avatar' => ['nullable', 'image', 'max:1024'],
         ]);
 
         if ($request->hasFile('avatar')) {
-            // Delete old avatar
-            if ($user->avatar) {
-                Storage::disk('public')->delete('avatars/' . $user->avatar);
-            }
-            
             $avatar = $request->file('avatar')->store('avatars', 'public');
             $validated['avatar'] = basename($avatar);
         }
 
-        if ($validated['password']) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
+        // Set membership expiration
+        if ($validated['membership'] === 'free') {
+            $validated['membership_expires_at'] = null;
+        } elseif (!isset($validated['membership_expires_at'])) {
+            $validated['membership_expires_at'] = now()->addMonth();
         }
 
         $user->update($validated);
 
         return redirect()
             ->route('admin.users')
-            ->with('success', 'User berhasil diupdate');
+            ->with('success', 'User berhasil diperbarui');
     }
 
     public function destroy(User $user)

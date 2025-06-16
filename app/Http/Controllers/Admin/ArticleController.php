@@ -15,7 +15,7 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Article::with(['user', 'tags']);
+        $query = Article::with(['user', 'tags', 'likes']);
 
         if ($request->filled('search')) {
             $search = $request->search;

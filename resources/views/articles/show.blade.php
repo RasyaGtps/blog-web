@@ -106,6 +106,56 @@
             <i class="far fa-comment"></i>
             <span>{{ $article->comments->count() }}</span>
         </div>
+        @auth
+            <div class="flex items-center gap-2" x-data="{ isLiked: {{ $article->isLikedBy(auth()->user()) ? 'true' : 'false' }}, likesCount: {{ $article->likes()->count() }} }">
+                <form x-show="!isLiked" 
+                      @submit.prevent="
+                        fetch('{{ route('articles.like', $article) }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            isLiked = true;
+                            likesCount = data.likes_count;
+                        })">
+                    <button type="submit" class="flex items-center gap-1 hover:text-blue-600">
+                        <i class="far fa-heart"></i>
+                        <span x-text="likesCount"></span>
+                    </button>
+                </form>
+                <form x-show="isLiked" 
+                      @submit.prevent="
+                        fetch('{{ route('articles.unlike', $article) }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            },
+                            body: new URLSearchParams({
+                                '_method': 'DELETE'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            isLiked = false;
+                            likesCount = data.likes_count;
+                        })">
+                    <button type="submit" class="flex items-center gap-1 text-blue-600">
+                        <i class="fas fa-heart"></i>
+                        <span x-text="likesCount"></span>
+                    </button>
+                </form>
+            </div>
+        @else
+            <div class="flex items-center gap-2">
+                <i class="far fa-heart"></i>
+                <span>{{ $article->likes()->count() }}</span>
+            </div>
+        @endauth
     </div>
 
     <!-- Comments Section -->
@@ -200,9 +250,15 @@
 
                         <!-- Comment Actions -->
                         <div class="flex items-center gap-4 text-sm text-gray-500">
+                            @auth
                             <button @click="showReplyForm = !showReplyForm" class="hover:text-gray-700">
                                 Reply
                             </button>
+                                @can('update', $comment)
+                                    <button @click="$dispatch('edit-comment', { id: {{ $comment->id }}, content: '{{ $comment->content }}' })" class="hover:text-blue-600">
+                                        Edit
+                                    </button>
+                                @endcan
                             @can('delete', $comment)
                                 <form action="{{ route('comments.destroy', $comment) }}" 
                                       method="POST" 
@@ -215,55 +271,40 @@
                                     </button>
                                 </form>
                             @endcan
+                            @endauth
                         </div>
 
-                        <!-- Reply Form -->
-                        @auth
-                            <div x-show="showReplyForm" x-cloak class="mt-4">
-                                <div class="flex items-center gap-2 mb-2">
-                                    <a href="{{ route('profile.show', auth()->user()->username) }}" class="flex items-center gap-2">
-                                        @if(auth()->user()->avatar)
-                                            <img src="{{ asset('avatars/' . auth()->user()->avatar) }}" 
-                                                 alt="{{ auth()->user()->username }}" 
-                                                 class="w-8 h-8 rounded-full object-cover">
-                                        @else
-                                            <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->username) }}" 
-                                                 alt="{{ auth()->user()->username }}" 
-                                                 class="w-8 h-8 rounded-full">
-                                        @endif
-                                        <span class="font-medium hover:text-blue-600">{{ auth()->user()->username }}</span>
-                                    </a>
-                                    @if(auth()->user()->role === 'verified')
-                                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                            <i class="fas fa-check-circle text-xs"></i>
-                                            Verified
-                                        </span>
-                                    @endif
-                                </div>
-                                <div class="pl-10">
-                                    <form action="{{ route('comments.store', $article) }}" method="POST">
+                        <!-- Edit Comment Form -->
+                        @can('update', $comment)
+                        <div x-data="{ showEditForm: false, editContent: '' }" 
+                             @edit-comment.window="if ($event.detail.id === {{ $comment->id }}) { 
+                                showEditForm = true; 
+                                editContent = $event.detail.content;
+                             }">
+                            <div x-show="showEditForm" x-cloak class="mt-4">
+                                <form action="{{ route('comments.update', $comment) }}" method="POST">
                                         @csrf
-                                        <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                    @method('PUT')
                                         <textarea name="content" 
+                                              x-model="editContent"
                                                   class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
-                                                  rows="1"
-                                                  placeholder="Tulis komentar..."
+                                              rows="2"
                                                   required></textarea>
                                         <div class="flex justify-end gap-2 mt-2">
                                             <button type="button" 
-                                                    @click="showReplyForm = false"
+                                                @click="showEditForm = false"
                                                     class="text-gray-500 hover:text-gray-700 text-sm">
                                                 Cancel
                                             </button>
                                             <button type="submit" 
                                                     class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
-                                                Kirim
+                                            Update
                                             </button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
-                        @endauth
+                        @endcan
 
                         <!-- Nested Replies -->
                         @if($comment->replies->count() > 0)
@@ -282,6 +323,7 @@
                                             @endif
                                         </a>
                                         <div class="flex-1">
+                                            <!-- Reply Header -->
                                             <div class="flex items-center gap-2 mb-1">
                                                 <a href="{{ route('profile.show', $reply->user->username) }}" class="font-medium hover:text-blue-600">
                                                     {{ $reply->user->username }}
@@ -300,34 +342,121 @@
                                                 @endif
                                                 <span class="text-gray-500 text-sm">{{ $reply->created_at->diffForHumans() }}</span>
                                             </div>
+
+                                            <!-- Reply Content -->
                                             <div class="text-gray-800 mb-2">{{ $reply->content }}</div>
-                                            
+
                                             <!-- Reply Actions -->
                                             <div class="flex items-center gap-4 text-sm text-gray-500">
                                                 @auth
                                                     <button @click="showReplyForm = !showReplyForm" class="hover:text-gray-700">
                                                         Reply
                                                     </button>
-                                                @endauth
-                                                @can('delete', $reply)
-                                                    <form action="{{ route('comments.destroy', $reply) }}" 
-                                                          method="POST" 
-                                                          class="inline"
-                                                          onsubmit="return confirm('Delete this comment?');">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="hover:text-red-500">
-                                                            Delete
+                                                    @can('update', $reply)
+                                                        <button @click="$dispatch('edit-comment', { id: {{ $reply->id }}, content: '{{ $reply->content }}' })" class="hover:text-blue-600">
+                                                            Edit
                                                         </button>
-                                                    </form>
-                                                @endcan
+                                                    @endcan
+                                                    @can('delete', $reply)
+                                                        <form action="{{ route('comments.destroy', $reply) }}" 
+                                                              method="POST" 
+                                                              class="inline"
+                                                              onsubmit="return confirm('Delete this comment?');">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="hover:text-red-500">
+                                                                Delete
+                                                            </button>
+                                                        </form>
+                                                    @endcan
+                                                @endauth
                                             </div>
+
+                                            <!-- Edit Reply Form -->
+                                            @can('update', $reply)
+                                                <div x-data="{ showEditForm: false, editContent: '' }" 
+                                                     @edit-comment.window="if ($event.detail.id === {{ $reply->id }}) { 
+                                                        showEditForm = true; 
+                                                        editContent = $event.detail.content;
+                                                     }">
+                                                    <div x-show="showEditForm" x-cloak class="mt-4">
+                                                        <form action="{{ route('comments.update', $reply) }}" method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <textarea name="content" 
+                                                                      x-model="editContent"
+                                                                      class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
+                                                                      rows="2"
+                                                                      required></textarea>
+                                                            <div class="flex justify-end gap-2 mt-2">
+                                                                <button type="button" 
+                                                                        @click="showEditForm = false"
+                                                                        class="text-gray-500 hover:text-gray-700 text-sm">
+                                                                    Cancel
+                                                                </button>
+                                                                <button type="submit" 
+                                                                        class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
+                                                                    Update
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            @endcan
+
+                                            <!-- Reply Form for Nested Reply -->
+                                            @auth
+                                                <div x-show="showReplyForm" x-cloak class="mt-4">
+                                                    <div class="flex items-center gap-2 mb-2">
+                                                        <a href="{{ route('profile.show', auth()->user()->username) }}" class="flex items-center gap-2">
+                                                            @if(auth()->user()->avatar)
+                                                                <img src="{{ asset('avatars/' . auth()->user()->avatar) }}" 
+                                                                     alt="{{ auth()->user()->username }}" 
+                                                                     class="w-8 h-8 rounded-full object-cover">
+                                                            @else
+                                                                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->username) }}" 
+                                                                     alt="{{ auth()->user()->username }}" 
+                                                                     class="w-8 h-8 rounded-full">
+                                                            @endif
+                                                            <span class="font-medium hover:text-blue-600">{{ auth()->user()->username }}</span>
+                                                        </a>
+                                                        @if(auth()->user()->role === 'verified')
+                                                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                                <i class="fas fa-check-circle text-xs"></i>
+                                                                Verified
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="pl-10">
+                                                        <form action="{{ route('comments.store', $article) }}" method="POST">
+                                                            @csrf
+                                                            <input type="hidden" name="parent_id" value="{{ $reply->id }}">
+                                                            <textarea name="content" 
+                                                                      class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
+                                                                      rows="1"
+                                                                      placeholder="Tulis balasan..."
+                                                                      required></textarea>
+                                                            <div class="flex justify-end gap-2 mt-2">
+                                                                <button type="button" 
+                                                                        @click="showReplyForm = false"
+                                                                        class="text-gray-500 hover:text-gray-700 text-sm">
+                                                                    Cancel
+                                                                </button>
+                                                                <button type="submit" 
+                                                                        class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
+                                                                    Kirim
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            @endauth
 
                                             <!-- Show Nested Replies -->
                                             @if($reply->replies->count() > 0)
                                                 <div class="mt-4 space-y-4">
                                                     @foreach($reply->replies as $nestedReply)
-                                                        <div class="flex gap-3 pl-8" x-data="{ showReplyForm: false }">
+                                                        <div class="flex gap-3 pl-8">
                                                             <a href="{{ route('profile.show', $nestedReply->user->username) }}" class="flex-shrink-0">
                                                                 @if($nestedReply->user->avatar)
                                                                     <img src="{{ asset('avatars/' . $nestedReply->user->avatar) }}" 
@@ -363,82 +492,56 @@
                                                                 <!-- Nested Reply Actions -->
                                                                 <div class="flex items-center gap-4 text-sm text-gray-500">
                                                                     @auth
-                                                                        <button @click="showReplyForm = !showReplyForm" class="hover:text-gray-700">
-                                                                            Reply
-                                                                        </button>
-                                                                    @endauth
-                                                                    @can('delete', $nestedReply)
-                                                                        <form action="{{ route('comments.destroy', $nestedReply) }}" 
-                                                                              method="POST" 
-                                                                              class="inline"
-                                                                              onsubmit="return confirm('Delete this comment?');">
-                                                                            @csrf
-                                                                            @method('DELETE')
-                                                                            <button type="submit" class="hover:text-red-500">
-                                                                                Delete
+                                                                        @can('update', $nestedReply)
+                                                                            <button @click="$dispatch('edit-comment', { id: {{ $nestedReply->id }}, content: '{{ $nestedReply->content }}' })" class="hover:text-blue-600">
+                                                                                Edit
                                                                             </button>
-                                                                        </form>
-                                                                    @endcan
+                                                                        @endcan
+                                                                        @can('delete', $nestedReply)
+                                                                            <form action="{{ route('comments.destroy', $nestedReply) }}" 
+                                                                                  method="POST" 
+                                                                                  class="inline"
+                                                                                  onsubmit="return confirm('Delete this comment?');">
+                                                                                @csrf
+                                                                                @method('DELETE')
+                                                                                <button type="submit" class="hover:text-red-500">
+                                                                                    Delete
+                                                                                </button>
+                                                                            </form>
+                                                                        @endcan
+                                                                    @endauth
                                                                 </div>
 
-                                                                <!-- Nested Reply Form -->
-                                                                @auth
-                                                                    <div x-show="showReplyForm" x-cloak class="mt-4">
-                                                                        <div class="flex items-center gap-2 mb-2">
-                                                                            <a href="{{ route('profile.show', auth()->user()->username) }}" class="flex items-center gap-2">
-                                                                                @if(auth()->user()->avatar)
-                                                                                    <img src="{{ asset('avatars/' . auth()->user()->avatar) }}" 
-                                                                                         alt="{{ auth()->user()->username }}" 
-                                                                                         class="w-6 h-6 rounded-full object-cover">
-                                                                                @else
-                                                                                    <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->username) }}" 
-                                                                                         alt="{{ auth()->user()->username }}" 
-                                                                                         class="w-6 h-6 rounded-full">
-                                                                                @endif
-                                                                                <span class="font-medium hover:text-blue-600">{{ auth()->user()->username }}</span>
-                                                                            </a>
-                                                                            @if(auth()->user()->role === 'verified')
-                                                                                <span class="bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
-                                                                                    <i class="fas fa-check-circle text-xs"></i>
-                                                                                    Verified
-                                                                                </span>
-                                                                            @endif
-                                                                        </div>
-                                                                        <div class="pl-8">
-                                                                            <form action="{{ route('comments.store', $article) }}" method="POST">
+                                                                <!-- Edit Nested Reply Form -->
+                                                                @can('update', $nestedReply)
+                                                                    <div x-data="{ showEditForm: false, editContent: '' }" 
+                                                                         @edit-comment.window="if ($event.detail.id === {{ $nestedReply->id }}) { 
+                                                                            showEditForm = true; 
+                                                                            editContent = $event.detail.content;
+                                                                         }">
+                                                                        <div x-show="showEditForm" x-cloak class="mt-4">
+                                                                            <form action="{{ route('comments.update', $nestedReply) }}" method="POST">
                                                                                 @csrf
-                                                                                <input type="hidden" name="parent_id" value="{{ $nestedReply->id }}">
+                                                                                @method('PUT')
                                                                                 <textarea name="content" 
+                                                                                          x-model="editContent"
                                                                                           class="w-full p-3 bg-gray-100 rounded-lg border-0 focus:ring-0 text-base resize-none focus:bg-white transition-colors"
-                                                                                          rows="1"
-                                                                                          placeholder="Tulis balasan..."
+                                                                                          rows="2"
                                                                                           required></textarea>
                                                                                 <div class="flex justify-end gap-2 mt-2">
                                                                                     <button type="button" 
-                                                                                            @click="showReplyForm = false"
+                                                                                            @click="showEditForm = false"
                                                                                             class="text-gray-500 hover:text-gray-700 text-sm">
-                                                                                        Batal
+                                                                                        Cancel
                                                                                     </button>
                                                                                     <button type="submit" 
                                                                                             class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-sm hover:bg-blue-700">
-                                                                                        Kirim
+                                                                                        Update
                                                                                     </button>
                                                                                 </div>
                                                                             </form>
                                                                         </div>
                                                                     </div>
-                                                                @endauth
-
-                                                                @can('delete', $nestedReply)
-                                                                    <form action="{{ route('comments.destroy', $nestedReply) }}" 
-                                                                          method="POST" 
-                                                                          class="inline">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit" class="text-sm text-gray-500 hover:text-red-500">
-                                                                            Delete
-                                                                        </button>
-                                                                    </form>
                                                                 @endcan
                                                             </div>
                                                         </div>

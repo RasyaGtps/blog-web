@@ -107,13 +107,27 @@
                     </td>
                     <td class="p-4">
                         @if($user->membership === 'premium')
-                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-900/20 text-yellow-400">
-                                Premium
-                            </span>
+                            <div>
+                                <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-900/20 text-yellow-400">
+                                    Premium
+                                </span>
+                                @if($user->membership_expires_at)
+                                    <div class="mt-1 text-xs text-gray-400">
+                                        Expires: {{ $user->membership_expires_at->format('d M Y') }}
+                                    </div>
+                                @endif
+                            </div>
                         @elseif($user->membership === 'basic')
-                            <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-900/20 text-blue-400">
-                                Basic
-                            </span>
+                            <div>
+                                <span class="px-3 py-1 rounded-full text-xs font-medium bg-blue-900/20 text-blue-400">
+                                    Basic
+                                </span>
+                                @if($user->membership_expires_at)
+                                    <div class="mt-1 text-xs text-gray-400">
+                                        Expires: {{ $user->membership_expires_at->format('d M Y') }}
+                                    </div>
+                                @endif
+                            </div>
                         @else
                             <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-900/20 text-gray-400">
                                 Free

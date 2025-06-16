@@ -17,6 +17,7 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FooterController;
 use App\Http\Controllers\Auth\OtpVerificationController;
+use App\Http\Controllers\LikeController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -52,6 +53,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
+    Route::post('/articles/{article}/like', [LikeController::class, 'like'])->name('articles.like');
+    Route::delete('/articles/{article}/unlike', [LikeController::class, 'unlike'])->name('articles.unlike');
+    
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/profile/{username}', [ProfileController::class, 'show'])->name('profile.show');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -65,6 +69,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::put('/comments/{comment}', [CommentController::class, 'update'])->name('comments.update');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     
     Route::post('/follow/{user}', [ProfileController::class, 'follow'])->name('user.follow');
     Route::delete('/unfollow/{user}', [ProfileController::class, 'unfollow'])->name('user.unfollow');

@@ -16,7 +16,6 @@ class ChatController extends Controller
     {
         $user = Auth::user();
         
-        // Get unique users that the current user has chatted with
         $chatUsers = User::whereIn('id', function($query) use ($user) {
             $query->select('from_user_id')
                   ->from('messages')

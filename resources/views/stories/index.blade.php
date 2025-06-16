@@ -131,6 +131,10 @@
                                     <i class="far fa-comment"></i>
                                     {{ $article->comments->count() }}
                                 </span>
+                                <span class="flex items-center gap-1 text-gray-500">
+                                    <i class="far fa-heart"></i>
+                                    {{ $article->likes()->count() }}
+                                </span>
                             </div>
                         </div>
                         @if($article->image)

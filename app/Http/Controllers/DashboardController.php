@@ -57,7 +57,7 @@ class DashboardController extends Controller
 
         // Untuk user biasa
         $articles = Article::where('user_id', auth()->id())
-            ->with('comments')
+            ->with(['comments', 'likes'])
             ->latest()
             ->paginate(10);
 

@@ -13,9 +13,6 @@ class ArticleController extends Controller
 {
     use AuthorizesRequests;
 
-    /**
-     * Display the article creation form.
-     */
     public function create()
     {
         $tags = Tag::orderBy('name')->get();
@@ -125,21 +122,4 @@ class ArticleController extends Controller
             ->with('success', 'Article deleted successfully!');
     }
 
-    /**
-     * Store article through API.
-     */
-    public function apiStore(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-        ]);
-
-        $article = $request->user()->articles()->create($validated);
-
-        return response()->json([
-            'message' => 'Article created successfully',
-            'article' => $article
-        ], 201);
-    }
 }

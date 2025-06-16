@@ -97,6 +97,10 @@
                                                 <i class="far fa-comment"></i>
                                                 {{ $article->comments->count() }} comments
                                             </span>
+                                            <span class="flex items-center gap-1">
+                                                <i class="far fa-heart"></i>
+                                                {{ $article->likes->count() }} likes
+                                            </span>
                                         </div>
                                     </div>
                                 @endforeach

@@ -128,6 +128,10 @@
                                 <i class="far fa-comment"></i>
                                 {{ $article->comments->count() }}
                             </button>
+                            <span class="flex items-center gap-1">
+                                <i class="far fa-heart"></i>
+                                {{ $article->likes->count() }}
+                            </span>
                         </div>
                     </td>
                     <td class="p-4">

@@ -21,7 +21,22 @@
     </div>
 
     <div class="bg-[#242424] rounded-lg shadow-lg p-6">
-        <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data" x-data="{ 
+            membership: '{{ old('membership', 'free') }}',
+            updateExpirationField() {
+                if (this.membership === 'free') {
+                    $refs.expirationDate.disabled = true;
+                    $refs.expirationDate.value = '';
+                } else {
+                    $refs.expirationDate.disabled = false;
+                    if (!$refs.expirationDate.value) {
+                        let date = new Date();
+                        date.setMonth(date.getMonth() + 1);
+                        $refs.expirationDate.value = date.toISOString().split('T')[0];
+                    }
+                }
+            }
+        }" x-init="updateExpirationField()">
             @csrf
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -121,6 +136,37 @@
                         <option value="verified" {{ old('role') === 'verified' ? 'selected' : '' }}>Verified</option>
                     </select>
                     @error('role')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Membership -->
+                <div>
+                    <label class="block text-gray-400 mb-2" for="membership">Membership</label>
+                    <select name="membership" 
+                            id="membership"
+                            x-model="membership"
+                            @change="updateExpirationField()"
+                            class="w-full bg-[#2f2f2f] text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            required>
+                        <option value="free">Free</option>
+                        <option value="basic">Basic</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                    @error('membership')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Membership Expiration -->
+                <div>
+                    <label class="block text-gray-400 mb-2" for="membership_expires_at">Membership Expiration Date</label>
+                    <input type="date" 
+                           name="membership_expires_at" 
+                           id="membership_expires_at"
+                           x-ref="expirationDate"
+                           class="w-full bg-[#2f2f2f] text-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    @error('membership_expires_at')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>

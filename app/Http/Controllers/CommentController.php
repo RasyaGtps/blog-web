@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CommentController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Store a newly created comment.
      */
@@ -50,5 +53,30 @@ class CommentController extends Controller
         }
 
         return back()->with('success', 'Comment deleted successfully!');
+    }
+
+    /**
+     * Update the specified comment.
+     */
+    public function update(Request $request, Comment $comment)
+    {
+        $this->authorize('update', $comment);
+        
+        $validated = $request->validate([
+            'content' => 'required|string'
+        ]);
+
+        $comment->update([
+            'content' => $validated['content']
+        ]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Comment updated successfully',
+                'comment' => $comment->load(['user'])
+            ]);
+        }
+
+        return back()->with('success', 'Comment updated successfully!');
     }
 }

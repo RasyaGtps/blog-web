@@ -67,10 +67,6 @@
                                 <p class="text-gray-600 line-clamp-3 mb-4">{{ $article->description }}</p>
                                 <div class="flex items-center justify-between text-sm text-gray-500">
                                     <span>{{ $article->read_time ?? '5' }} min read</span>
-                                    <div class="flex items-center gap-2">
-                                        <i class="fas fa-bookmark"></i>
-                                        <span>Save</span>
-                                    </div>
                                 </div>
                             </div>
                         </article>
