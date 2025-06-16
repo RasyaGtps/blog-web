@@ -84,18 +84,11 @@
             <div class="max-w-6xl mx-auto px-4">
                 <h2 class="text-3xl font-bold mb-12" data-aos="fade-up">Jelajahi Kategori</h2>
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" data-aos="fade-up">
-                    @foreach(['Technology', 'Health', 'Business', 'Travel', 'Food', 'Lifestyle', 'Science', 'Culture'] as $category)
+                    @foreach($tags as $tag)
                         <a href="#" class="group">
                             <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow text-center">
-                                <i class="fas fa-{{ $category === 'Technology' ? 'laptop-code' :
-                                                  ($category === 'Health' ? 'heartbeat' :
-                                                  ($category === 'Business' ? 'chart-line' :
-                                                  ($category === 'Travel' ? 'plane' :
-                                                  ($category === 'Food' ? 'utensils' :
-                                                  ($category === 'Lifestyle' ? 'spa' :
-                                                  ($category === 'Science' ? 'flask' : 'palette')))))) }}
-                                   text-2xl mb-3 text-gray-600 group-hover:text-blue-600 transition-colors"></i>
-                                <h3 class="font-medium group-hover:text-blue-600 transition-colors">{{ $category }}</h3>
+                                <i class="fas fa-tag text-2xl mb-3 text-gray-600 group-hover:text-blue-600 transition-colors"></i>
+                                <h3 class="font-medium group-hover:text-blue-600 transition-colors">{{ $tag->name }}</h3>
                             </div>
                         </a>
                     @endforeach
@@ -133,7 +126,6 @@
             </div>
         </section>
 
-        <!-- CTA Section -->
         <section class="py-20 bg-gradient-to-r bg-[#FDF6F0] text-black">
             <div class="max-w-4xl mx-auto px-4 text-center">
                 <h2 class="text-4xl font-bold mb-6" data-aos="fade-up">Mulai Menulis Cerita Anda</h2>

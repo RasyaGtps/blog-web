@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
@@ -13,7 +14,7 @@ class WelcomeController extends Controller
             ->orderBy('views', 'desc')
             ->take(3)
             ->get();
-
-        return view('welcome', compact('featuredArticles'));
+        $tags = Tag::all();
+        return view('welcome', compact('featuredArticles', 'tags'));
     }
-} 
+}
