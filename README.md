@@ -171,7 +171,6 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
 **Rayy (RasyaGtps)**
 - GitHub: [@RasyaGtps](https://github.com/RasyaGtps)
-- Website: [byread.com](https://byread.com)
 
 ---
 
