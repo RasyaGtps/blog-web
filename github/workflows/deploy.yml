@@ -1,0 +1,22 @@
+name: Deploy Laravel ke Server VM
+on:
+  push:
+    branches: [ "main" ]
+jobs:
+  deploy:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+    uses: actions/checkout@v3
+    - name: Deploy ke VM Proxmox
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.VM_HOST }}
+        username: ${{ secrets.VM_USER }}
+        password: ${{ secrets.VM_PASS }}
+        script: |
+          cd /var/www/<nama_project>
+          git pull origin main
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          php artisan migrate –force
+sudo systemctl restart nginx
