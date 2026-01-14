@@ -136,7 +136,7 @@
                                 'Accept': 'application/json'
                             },
                             body: new URLSearchParams({
-                                '_method': 'DELETE'
+                                '_method': 'DELETE
                             })
                         })
                         .then(response => response.json())
